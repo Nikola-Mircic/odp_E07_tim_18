@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "description": "Projekat iz ODP-a",
+  "homepage": "https://github.com/Nikola-Mircic/odp_E07_tim_18#readme",
+  "bugs": {
+    "url": "https://github.com/Nikola-Mircic/odp_E07_tim_18/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nikola-Mircic/odp_E07_tim_18.git"
+  },
+  "license": "MIT",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.13"
+  }
+}
