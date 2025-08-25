@@ -3,23 +3,35 @@ import { User } from "../../../Domain/models/User";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import db from "../../connection/DbConnectionPool";
 
+import { CreateUserDTO } from "../../../Domain/DTOs/users/CreateUserDTO";
+
 export class UserRepository implements IUserRepository {
-  async create(user: User): Promise<User> {
+  async create(user: CreateUserDTO): Promise<User> {
     try {
       const query = `
-        INSERT INTO users (korisnickoIme, lozinka) 
-        VALUES (?, ?)
+        INSERT INTO users (editor, ime, prezime, mejl, lozinka) 
+        VALUES (?, ?, ?, ?, ?)
       `;
 
       const [result] = await db.execute<ResultSetHeader>(query, [
-        user.korisnickoIme,
+        user.editor,
+        user.ime,
+        user.prezime,
+        user.mejl,
         user.lozinka,
       ]);
 
 
       if (result.insertId) {
         // Vraćamo novog korisnika sa dodeljenim ID-om
-        return new User(result.insertId, user.korisnickoIme, user.lozinka);
+        return new User(
+					result.insertId,
+					user.editor,
+					user.ime,
+					user.prezime,
+					user.mejl,
+					user.lozinka
+				);
       }
 
       // Vraćamo prazan objekat ako kreiranje nije uspešno
@@ -32,8 +44,8 @@ export class UserRepository implements IUserRepository {
   async getById(id: number): Promise<User> {
     try {
       const query = `
-        SELECT id, korisnickoIme, lozinka 
-        FROM users 
+        SELECT id, editor, ime, prezime, mejl, lozinka 
+        FROM users
         WHERE id = ?
       `;
 
@@ -41,7 +53,15 @@ export class UserRepository implements IUserRepository {
 
       if (rows.length > 0) {
         const row = rows[0];
-        return new User(row.id, row.korisnickoIme, row.lozinka);
+
+        return new User(
+          row.id,
+          row.editor,
+          row.ime,
+          row.prezime,
+          row.mejl, 
+          row.lozinka
+        );
       }
 
       return new User();
@@ -53,8 +73,8 @@ export class UserRepository implements IUserRepository {
   async getByUsername(korisnickoIme: string): Promise<User> {
     try {
       const query = `
-        SELECT id, korisnickoIme, lozinka 
-        FROM users 
+        SELECT id, editor, ime, prezime, mejl, lozinka 
+        FROM user
         WHERE korisnickoIme = ?
       `;
 
@@ -62,7 +82,15 @@ export class UserRepository implements IUserRepository {
 
       if (rows.length > 0) {
         const row = rows[0];
-        return new User(row.id, row.korisnickoIme, row.lozinka);
+
+        return new User(
+					row.id,
+					row.editor,
+					row.ime,
+					row.prezime,
+					row.mejl,
+					row.lozinka
+				);
       }
 
       return new User();
@@ -74,15 +102,22 @@ export class UserRepository implements IUserRepository {
   async getAll(): Promise<User[]> {
     try {
       const query = `
-        SELECT id, korisnickoIme, lozinka 
-        FROM users 
+        SELECT id, editor, ime, prezime, mejl, lozinka 
+        FROM users
         ORDER BY id ASC
       `;
 
       const [rows] = await db.execute<RowDataPacket[]>(query);
 
       return rows.map(
-        (row) => new User(row.id, row.korisnickoIme, row.lozinka)
+        (row) => new User(
+          row.id,
+          row.editor,
+          row.ime,
+          row.prezime,
+          row.mejl, 
+          row.lozinka
+        )
       );
     } catch {
       return [];
@@ -92,13 +127,16 @@ export class UserRepository implements IUserRepository {
   async update(user: User): Promise<User> {
     try {
       const query = `
-        UPDATE users 
-        SET korisnickoIme = ?, lozinka = ? 
+        UPDATE users
+        SET editor = ?, ime = ?, prezime = ?, mejl = ?, lozinka = ? 
         WHERE id = ?
       `;
 
       const [result] = await db.execute<ResultSetHeader>(query, [
-        user.korisnickoIme,
+        user.editor,
+        user.ime,
+        user.prezime,
+        user.mejl,
         user.lozinka,
         user.id,
       ]);
@@ -116,7 +154,7 @@ export class UserRepository implements IUserRepository {
   async delete(id: number): Promise<boolean> {
     try {
       const query = `
-        DELETE FROM users 
+        DELETE FROM users
         WHERE id = ?
       `;
 

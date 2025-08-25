@@ -1,3 +1,4 @@
+import { CreateUserDTO } from "../../DTOs/users/CreateUserDTO";
 import { User } from "../../models/User";
 
 /**
@@ -10,7 +11,7 @@ export interface IUserRepository {
    * @param user - Objekat korisnika za kreiranje
    * @returns Promise koji vraća kreiranog korisnika sa dodeljenim ID-om ili prazan objekat
    */
-  create(user: User): Promise<User>;
+  create(user: CreateUserDTO): Promise<User>;
 
   /**
    * Pronalazi korisnika po ID-u
