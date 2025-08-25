@@ -7,6 +7,9 @@ import { UserRepository } from './Database/repositories/users/UserRepository';
 import { AuthController } from './WebAPI/controllers/AuthController';
 import { IVestRepository } from './Domain/repositories/vesti/IVestRepository';
 import { VestiRepository } from './Database/repositories/vesti/VestiRepository';
+import { ITagRepository } from './Domain/repositories/tags/ITagRepository';
+import { Tag } from './Domain/models/Tag';
+import { TagRepository } from './Database/repositories/tags/TagRepository';
 
 require('dotenv').config();
 
@@ -18,8 +21,9 @@ app.use(express.json());
 // Repositories
 const userRepository: IUserRepository = new UserRepository();
 const vestRepository: IVestRepository = new VestiRepository();
+const tagsRepository: ITagRepository = new TagRepository();
 
-vestRepository.getByTime().then(res => console.log(res));
+vestRepository.getSlicneVesti(2).then(res => console.log(res));
 
 // Services
 //const authService: IAuthService = new AuthService(userRepository);

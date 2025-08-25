@@ -18,8 +18,11 @@ CREATE TABLE vesti IF NOT EXISTS (
  
 CREATE TABLE tags IF NOT EXISTS (
 	id_vesti INT NOT NULL,
-    naziv VARCHAR(20) NOT NULL
+  naziv VARCHAR(20) NOT NULL
 );
+
+-- Osiguranje da isti tag ne moze biti dodat vise puta za istu vest
+ALTER TABLE tags ADD UNIQUE `unique_index`(`id_vesti`, `naziv`);
 
 CREATE TABLE users IF NOT EXISTS (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
