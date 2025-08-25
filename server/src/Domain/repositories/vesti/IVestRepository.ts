@@ -8,4 +8,5 @@ export interface IVestRepository {
   getByTime(): Promise<Vest[]>;
   update(vest: Vest): Promise<Vest>;
   delete(id: number): Promise<boolean>;
+  getSlicneVesti(id: number): Promise<Vest[]>;
 }
