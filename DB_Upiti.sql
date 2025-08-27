@@ -1,17 +1,5 @@
 -- Kreiranje baze podataka
-<<<<<<< HEAD
-CREATE DATABASE IF NOT EXISTS DEFAULT_DB;
 
--- Koriscenje default baze podataka
-USE DEFAULT_DB;
-
--- Kreiranje tabele za korisnike
-CREATE TABLE IF NOT EXISTS users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    korisnickoIme VARCHAR(50) UNIQUE,
-    lozinka VARCHAR(500)
-);
-=======
 CREATE DATABASE IF NOT EXISTS projekat_odp_db;
 
 -- Koriscenje default baze podataka
@@ -24,13 +12,17 @@ CREATE TABLE vesti IF NOT EXISTS (
     naslov VARCHAR(60) NOT NULL,
     tekst TEXT NOT NULL,
     slika VARCHAR(20),
-    vreme DATETIME NOT NULL
+    vreme DATETIME NOT NULL,
+    br_pregleda INT DEFAULT 0
 );
  
 CREATE TABLE tags IF NOT EXISTS (
 	id_vesti INT NOT NULL,
-    naziv VARCHAR(20) NOT NULL
+  naziv VARCHAR(20) NOT NULL
 );
+
+-- Osiguranje da isti tag ne moze biti dodat vise puta za istu vest
+ALTER TABLE tags ADD UNIQUE `unique_index`(`id_vesti`, `naziv`);
 
 CREATE TABLE users IF NOT EXISTS (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -86,4 +78,3 @@ INSERT INTO tags (id_vesti, naziv)
 VALUES (4, "world cup");
 INSERT INTO tags (id_vesti, naziv)
 VALUES (4, "fudbal");
->>>>>>> server
