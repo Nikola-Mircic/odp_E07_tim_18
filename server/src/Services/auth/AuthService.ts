@@ -1,42 +1,54 @@
+import { blob } from "stream/consumers";
 import { UserLoginDto } from "../../Domain/DTOs/auth/UserLoginDto";
+import { CreateUserDTO } from "../../Domain/DTOs/users/CreateUserDTO";
 import { User } from "../../Domain/models/User";
 import { IUserRepository } from "../../Domain/repositories/users/IUserRepository";
 import { IAuthService } from "../../Domain/services/auth/IAuthService";
 import bcrypt from "bcryptjs";
 
 export class AuthService implements IAuthService {
-  private readonly saltRounds: number = parseInt(process.env.SALT_ROUNDS || "10", 10);
+	private readonly saltRounds: number = parseInt(
+		process.env.SALT_ROUNDS || "10",
+		10
+	);
 
-  public constructor(private userRepository: IUserRepository) {}
+	public constructor(private userRepository: IUserRepository) {}
 
-  async prijava(korisnickoIme: string, lozinka: string): Promise<UserLoginDto> {
-    const user = await this.userRepository.getByUsername(korisnickoIme);
+	/**
+	 * Prijava korisnika
+	 * @param mejl - Korisničko ime korisnika
+	 * @param lozinka - Lozinka korisnika
+	 * @return userLoginDto - DTO sa userid i mejlom
+	 */
+	async prijava(mejl: string, lozinka: string): Promise<number> {
+		const user = await this.userRepository.getByEmail(mejl);
 
-    if (user.id !== 0 && await bcrypt.compare(lozinka, user.lozinka)) {
-      return new UserLoginDto(user.id, user.korisnickoIme);
-    }
+    var validPassword: boolean = await bcrypt.compare(lozinka, user.lozinka);
 
-    return new UserLoginDto(); // Neispravno korisničko ime ili lozinka
-  }
+    console.log("Valid password: " + validPassword);
+    console.log("For user: " + user.mejl + " with id: " + user.id);
 
-  async registracija(korisnickoIme: string, lozinka: string): Promise<UserLoginDto> {
-    const existingUser = await this.userRepository.getByUsername(korisnickoIme);
+		if (user.id !== 0 && (await bcrypt.compare(lozinka, user.lozinka))) {
+			return user.id;
+		}
 
-    if (existingUser.id !== 0) {
-      return new UserLoginDto(); // Korisnik već postoji
-    }
+		return 0; // Neispravno korisničko ime ili lozinka
+	}
 
-    // Hash-ujemo lozinku pre čuvanja
-    const hashedPassword = await bcrypt.hash(lozinka, this.saltRounds);
+	async registracija(user: CreateUserDTO): Promise<number> {
+		const existingUser = await this.userRepository.getByEmail(user.mejl);
 
-    const newUser = await this.userRepository.create(
-      new User(0, korisnickoIme, hashedPassword)
+		if (existingUser.id !== 0) {
+			return 0; // Korisnik već postoji
+		}
+
+		// Hash-ujemo lozinku pre čuvanja
+		const hashedPassword = await bcrypt.hash(user.lozinka, this.saltRounds);
+
+		const newUser = await this.userRepository.create(
+      new User(0, user.editor, user.ime, user.prezime, user.mejl, hashedPassword)
     );
 
-    if (newUser.id !== 0) {
-      return new UserLoginDto(newUser.id, newUser.korisnickoIme);
-    }
-
-    return new UserLoginDto(); // Registracija nije uspela
-  }
+		return newUser.id; // Registracija nije uspela
+	}
 }

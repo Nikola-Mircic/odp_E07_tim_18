@@ -1,6 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { IAuthService } from '../../Domain/services/auth/IAuthService';
 import { validacijaPodatakaAuth } from '../validators/auth/RegisterValidator';
+import { CreateUserDTO } from '../../Domain/DTOs/users/CreateUserDTO';
+import { StatusCodes } from '../../Domain/constants/StatusCodes';
 
 export class AuthController {
   private router: Router;
@@ -23,29 +25,31 @@ export class AuthController {
    */
   private async prijava(req: Request, res: Response): Promise<void> {
     try {
-      const { korisnickoIme, lozinka } = req.body;
+      const { mejl, lozinka } = req.body;
 
       // Validacija input parametara
-      const rezultat = validacijaPodatakaAuth(korisnickoIme, lozinka);
+      const rezultat = validacijaPodatakaAuth(mejl, lozinka);
 
       if (!rezultat.uspesno) {
-        res.status(400).json({ success: false, message: rezultat.poruka });
+        res
+					.status( StatusCodes.BAD_REQUEST )
+					.json({ success: false, message: rezultat.poruka });
         return;
       }
 
-      const result = await this.authService.prijava(korisnickoIme, lozinka);
+      const result = await this.authService.prijava(mejl, lozinka);
 
       // Proveravamo da li je prijava uspešna
-      if (result.id !== 0) {
-        res.status(200).json({success: true, message: 'Uspešna prijava', data: result});
+      if (result !== 0) {
+        res.status( StatusCodes.OK ).json({success: true, message: 'Uspešna prijava', data: result});
         return;
       } else {
-        res.status(401).json({success: false, message: 'Неисправно корисничко име или лозинка'});
+        res.status( StatusCodes.UNAUTHORIZED ).json({success: false, message: 'Неисправно корисничко име или лозинка'});
         return;
       }
     } catch (error) {
       console.log(error);
-      res.status(500).json({success: false, message: error});
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({success: false, message: error});
     }
   }
 
@@ -55,25 +59,25 @@ export class AuthController {
    */
   private async registracija(req: Request, res: Response): Promise<void> {
     try {
-      const { korisnickoIme, lozinka } = req.body;
+      const user: CreateUserDTO = req.body;
 
-      const rezultat = validacijaPodatakaAuth(korisnickoIme, lozinka);
+      const rezultat = validacijaPodatakaAuth(user.mejl, user.lozinka);
 
       if (!rezultat.uspesno) {
-        res.status(400).json({ success: false, message: rezultat.poruka });
+        res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: rezultat.poruka });
         return;
       }
 
-      const result = await this.authService.registracija(korisnickoIme, lozinka);
+      const result = await this.authService.registracija(user);
 
       // Proveravamo da li je registracija uspešna
-      if (result.id !== 0) {
-        res.status(201).json({success: true, message: 'Uspešna registracija', data: result});
+      if (result !== 0) {
+        res.status(StatusCodes.OK).json({success: true, message: 'Uspešna registracija', data: { id: result }});
       } else {
-        res.status(401).json({success: false, message: 'Регистрација није успела. Корисничко име већ постоји.', });
+        res.status(StatusCodes.BAD_REQUEST).json({success: false, message: 'Регистрација није успела. Корисничко име већ постоји.', });
       }
     } catch (error) {
-      res.status(500).json({success: false, message: error});
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({success: false, message: error});
     }
   }
 

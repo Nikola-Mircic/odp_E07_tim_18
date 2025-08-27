@@ -6,25 +6,25 @@ import db from "../../connection/DbConnectionPool";
 import { CreateUserDTO } from "../../../Domain/DTOs/users/CreateUserDTO";
 
 export class UserRepository implements IUserRepository {
-  async create(user: CreateUserDTO): Promise<User> {
-    try {
-      const query = `
+  // MARK: Create
+	async create(user: CreateUserDTO): Promise<User> {
+		try {
+			const query = `
         INSERT INTO users (editor, ime, prezime, mejl, lozinka) 
         VALUES (?, ?, ?, ?, ?)
       `;
 
-      const [result] = await db.execute<ResultSetHeader>(query, [
-        user.editor,
-        user.ime,
-        user.prezime,
-        user.mejl,
-        user.lozinka,
-      ]);
+			const [result] = await db.execute<ResultSetHeader>(query, [
+				user.editor,
+				user.ime,
+				user.prezime,
+				user.mejl,
+				user.lozinka,
+			]);
 
-
-      if (result.insertId) {
-        // Vraćamo novog korisnika sa dodeljenim ID-om
-        return new User(
+			if (result.insertId) {
+				// Vraćamo novog korisnika sa dodeljenim ID-om
+				return new User(
 					result.insertId,
 					user.editor,
 					user.ime,
@@ -32,58 +32,30 @@ export class UserRepository implements IUserRepository {
 					user.mejl,
 					user.lozinka
 				);
-      }
+			}
 
-      // Vraćamo prazan objekat ako kreiranje nije uspešno
-      return new User();
-    } catch {
-      return new User();
-    }
-  }
+			// Vraćamo prazan objekat ako kreiranje nije uspešno
+			return new User();
+		} catch {
+			return new User();
+		}
+	}
 
-  async getById(id: number): Promise<User> {
-    try {
-      const query = `
+  // MARK: Read by ID
+	async getById(id: number): Promise<User> {
+		try {
+			const query = `
         SELECT id, editor, ime, prezime, mejl, lozinka 
         FROM users
         WHERE id = ?
       `;
 
-      const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
+			const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
 
-      if (rows.length > 0) {
-        const row = rows[0];
+			if (rows.length > 0) {
+				const row = rows[0];
 
-        return new User(
-          row.id,
-          row.editor,
-          row.ime,
-          row.prezime,
-          row.mejl, 
-          row.lozinka
-        );
-      }
-
-      return new User();
-    } catch {
-      return new User();
-    }
-  }
-
-  async getByUsername(korisnickoIme: string): Promise<User> {
-    try {
-      const query = `
-        SELECT id, editor, ime, prezime, mejl, lozinka 
-        FROM user
-        WHERE korisnickoIme = ?
-      `;
-
-      const [rows] = await db.execute<RowDataPacket[]>(query, [korisnickoIme]);
-
-      if (rows.length > 0) {
-        const row = rows[0];
-
-        return new User(
+				return new User(
 					row.id,
 					row.editor,
 					row.ime,
@@ -91,94 +63,159 @@ export class UserRepository implements IUserRepository {
 					row.mejl,
 					row.lozinka
 				);
-      }
+			}
 
-      return new User();
-    } catch {
-      return new User();
-    }
-  }
+			return new User();
+		} catch {
+			return new User();
+		}
+	}
 
-  async getAll(): Promise<User[]> {
-    try {
-      const query = `
+  // MARK: Read by username
+	async getByUsername(korisnickoIme: string): Promise<User> {
+		try {
+			const query = `
+        SELECT id, editor, ime, prezime, mejl, lozinka 
+        FROM users
+        WHERE korisnickoIme = ?
+      `;
+
+			const [rows] = await db.execute<RowDataPacket[]>(query, [korisnickoIme]);
+
+			if (rows.length > 0) {
+				const row = rows[0];
+
+				return new User(
+					row.id,
+					row.editor,
+					row.ime,
+					row.prezime,
+					row.mejl,
+					row.lozinka
+				);
+			}
+
+			return new User();
+		} catch {
+			return new User();
+		}
+	}
+
+  // MARK: Read by email
+	async getByEmail(mejl: string): Promise<User> {
+		try {
+			const query = `
+        SELECT id, editor, ime, prezime, mejl, lozinka 
+        FROM users
+        WHERE mejl = ?
+      `;
+
+			const [rows] = await db.execute<RowDataPacket[]>(query, [mejl]);
+
+			if (rows.length > 0) {
+				const row = rows[0];
+
+				return new User(
+					row.id,
+					row.editor,
+					row.ime,
+					row.prezime,
+					row.mejl,
+					row.lozinka
+				);
+			}
+
+			return new User();
+		} catch {
+			return new User();
+		}
+	}
+
+  // MARK: Read all
+	async getAll(): Promise<User[]> {
+		try {
+			const query = `
         SELECT id, editor, ime, prezime, mejl, lozinka 
         FROM users
         ORDER BY id ASC
       `;
 
-      const [rows] = await db.execute<RowDataPacket[]>(query);
+			const [rows] = await db.execute<RowDataPacket[]>(query);
 
-      return rows.map(
-        (row) => new User(
-          row.id,
-          row.editor,
-          row.ime,
-          row.prezime,
-          row.mejl, 
-          row.lozinka
-        )
-      );
-    } catch {
-      return [];
-    }
-  }
+			return rows.map(
+				(row) =>
+					new User(
+						row.id,
+						row.editor,
+						row.ime,
+						row.prezime,
+						row.mejl,
+						row.lozinka
+					)
+			);
+		} catch {
+			return [];
+		}
+	}
 
-  async update(user: User): Promise<User> {
-    try {
-      const query = `
+  // MARK: Update
+	async update(user: User): Promise<User> {
+		try {
+			const query = `
         UPDATE users
         SET editor = ?, ime = ?, prezime = ?, mejl = ?, lozinka = ? 
         WHERE id = ?
       `;
 
-      const [result] = await db.execute<ResultSetHeader>(query, [
-        user.editor,
-        user.ime,
-        user.prezime,
-        user.mejl,
-        user.lozinka,
-        user.id,
-      ]);
+			const [result] = await db.execute<ResultSetHeader>(query, [
+				user.editor,
+				user.ime,
+				user.prezime,
+				user.mejl,
+				user.lozinka,
+				user.id,
+			]);
 
-      if (result.affectedRows > 0) {
-        return user;
-      }
+			if (result.affectedRows > 0) {
+				return user;
+			}
 
-      return new User();
-    } catch {
-      return new User();
-    }
-  }
+			return new User();
+		} catch {
+			return new User();
+		}
+	}
 
-  async delete(id: number): Promise<boolean> {
-    try {
-      const query = `
+  // MARK: Delete
+	async delete(id: number): Promise<boolean> {
+		try {
+			const query = `
         DELETE FROM users
         WHERE id = ?
       `;
 
-      const [result] = await db.execute<ResultSetHeader>(query, [id]);
+			const [result] = await db.execute<ResultSetHeader>(query, [id]);
 
-      return result.affectedRows > 0;
-    } catch {
-      return false;
-    }
-  }
+			return result.affectedRows > 0;
+		} catch {
+			return false;
+		}
+	}
 
-  async exists(id: number): Promise<boolean> {
-    try {
-      const query = `
+  // MARK: Exists
+	async exists(id: number): Promise<boolean> {
+		try {
+			const query = `
         SELECT COUNT(*) as count 
         FROM users 
         WHERE id = ?
       `;
 
-      const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
+			const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
 
-      return rows[0].count > 0;
-    } catch {
-      return false;
-    }
-  }
+			return rows[0].count > 0;
+		} catch {
+			return false;
+		}
+	}
 }
