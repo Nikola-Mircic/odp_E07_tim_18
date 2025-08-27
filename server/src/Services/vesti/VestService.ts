@@ -23,7 +23,7 @@ export class VestService implements IVestService {
     return this.vestRepository.getByTime();
   }
 
-  getNajpolularnijeVesti(n: number): Promise<Vest[]> {
+  getNajpolularnijeVesti(): Promise<Vest[]> {
     return this.vestRepository.getByPopularity();
   }
 	// Implementacija servisa

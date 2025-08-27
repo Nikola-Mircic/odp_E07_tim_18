@@ -33,5 +33,5 @@ export interface IVestService {
    * @param n - broj najpopularnijih vesti koje treba vratiti
    * @returns Niz najpopularnijih vesti ili prazan niz ako nema vesti
    */
-  getNajpolularnijeVesti(n: number): Promise<Vest[]>;
+  getNajpolularnijeVesti(): Promise<Vest[]>;
 }
