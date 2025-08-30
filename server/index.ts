@@ -6,10 +6,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.SERVER_PORT || 8080;
 
-app.get('/', (req, res) => {
+// Osnovna ruta
+app.get('/', (req: Request, res: Response) => {
   res.send('Hello, World!');
 });
 
+// Pokretanje servera
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

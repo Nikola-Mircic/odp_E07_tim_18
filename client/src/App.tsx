@@ -1,27 +1,32 @@
-import { useState, useEffect } from 'react'
-import { PročitajVrednostPoKljuču } from './helpers/local_storage'
-import KontrolnaTabla from './components/kontrolna_tabla/KontrolnaTabla'
-import AutentifikacionaForma from './components/autentifikacija/AutentifikacionaForma'
-import { authApi } from './api_services/auth/AuthAPIService';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import NewsFeed from "./pages/NewsFeed";
+import NewsDetail from "./pages/NewsDetail";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 
-function App() {
-  const [prijavljen, setPrijavljen] = useState<boolean>(false);
+const App: React.FC = () => {
+  return (
+    <Router>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
 
-  useEffect(() => {
-    const token = PročitajVrednostPoKljuču('authToken')
-    if (token && token.includes('/')) {
-      setPrijavljen(true)
-    }
-  }, [])
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<NewsFeed />} />
+            <Route path="/news/:id" element={<NewsDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<p>404 Stranica nije pronađena</p>} />
+          </Routes>
+        </main>
 
-  return prijavljen ? (
-    <KontrolnaTabla onLogout={() => setPrijavljen(false)} />
-  ) : (
-    <AutentifikacionaForma
-      authApi={authApi}
-      onLoginSuccess={() => setPrijavljen(true)}
-    />
-  )
-}
+        <Footer />
+      </div>
+    </Router>
+  );
+};
 
 export default App;
