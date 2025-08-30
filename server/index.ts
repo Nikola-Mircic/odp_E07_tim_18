@@ -1,7 +1,10 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const PORT = 80;
+const PORT = process.env.SERVER_PORT || 8080;
 
 // Osnovna ruta
 app.get('/', (req: Request, res: Response) => {

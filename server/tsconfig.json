@@ -1,12 +1,18 @@
 {
   "compilerOptions": {
-    // Kompajlira se za Node.js
-    "target": "ES2020",
-    "module": "CommonJS",
-    "strict": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "target": "esnext",
+    "module": "commonjs",
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "sourceMap": true
-  }
+    "noImplicitAny": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "./*.js",
+    "src/**/*.ts",
+    "test/**/*.ts",
+  ],
 }
