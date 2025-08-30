@@ -1,20 +1,32 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import NewsFeed from './pages/NewsFeed';
-import Navbar from './components/Navbar';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import NewsFeed from "./pages/NewsFeed";
+import NewsDetail from "./pages/NewsDetail";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<NewsFeed />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<NewsFeed />} />
+            <Route path="/news/:id" element={<NewsDetail />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<p>404 Stranica nije pronađena</p>} />
+          </Routes>
+        </main>
+
+        <Footer />
+      </div>
     </Router>
-  )
+  );
 };
 
 export default App;

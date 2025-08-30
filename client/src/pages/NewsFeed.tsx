@@ -17,7 +17,7 @@ const NewsFeed = () => {
   return (
     <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {news.map((n) => (
-        <NewsCard key={n.id} title={n.title} views={n.views} />
+        <NewsCard key={n.id} id={n.id} title={n.title} views={n.views} />
       ))}
     </div>
   );

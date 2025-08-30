@@ -1,11 +1,12 @@
 import React from "react";
 
 interface NewsCardProps{
+    id: number;
     title: string;
     views: number;
 }
 
-const NewsCard: React.FC<NewsCardProps> = ({ title, views }) => {
+const NewsCard: React.FC<NewsCardProps> = ({ id, title, views }) => {
     return (
         <div className="border p-2 mb-2">
             <h2>{title}</h2>
