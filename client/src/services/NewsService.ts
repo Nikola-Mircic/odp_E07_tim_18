@@ -1,16 +1,23 @@
+import axios from "axios";
+
 export type News = {
     id: number;
-    title: string;
-    content: string;
-    views: number;
+    tekst: string;
+    naslov: string;
+    br_pregleda: number;
 };
 
-const mockNews : News[] = [
-    { id: 1, title: "Prva vest", content: "Sadrzaj prve vesti.", views: 123 },
-    { id: 2, title: "Druga vest", content: "Sadrzaj druge vesti.", views: 98 },
-    { id: 3, title: "Treca vest", content: "Sadrzaj trece vesti", views: 83 },
-];
+interface NewsResponse {
+  success: boolean;
+  data: News[];
+}
 
-export function getAllNews(): News[] {
-    return mockNews;
+export function getAllNews(): Promise<News[]> {
+  const news = axios
+		.get<NewsResponse>("http://localhost:8080/api/v1/vesti/najpopularnije/")
+		.then((response) => {
+			return response.data;
+		}).then((newsResponse) => newsResponse.data);
+
+  return news;
 };
