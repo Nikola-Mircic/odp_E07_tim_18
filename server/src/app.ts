@@ -32,9 +32,7 @@ const tagsRepository: ITagRepository = new TagRepository();
 // Services
 const authService: IAuthService = new AuthService(userRepository);
 const userService: IUserService = new UserService(userRepository);
-const vestService: IVestService = new VestService(vestRepository);
-
-vestService.getSlicneVesti(2).then(res => console.log(res));
+const vestService: IVestService = new VestService(vestRepository, userRepository);
 
 // WebAPI routes
 const authController = new AuthController(authService);

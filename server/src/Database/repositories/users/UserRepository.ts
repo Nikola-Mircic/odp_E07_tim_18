@@ -10,12 +10,12 @@ export class UserRepository implements IUserRepository {
 	async create(user: CreateUserDTO): Promise<User> {
 		try {
 			const query = `
-        INSERT INTO users (editor, ime, prezime, mejl, lozinka) 
+        INSERT INTO users (uloga, ime, prezime, mejl, lozinka) 
         VALUES (?, ?, ?, ?, ?)
       `;
 
 			const [result] = await db.execute<ResultSetHeader>(query, [
-				user.editor,
+				user.uloga,
 				user.ime,
 				user.prezime,
 				user.mejl,
@@ -26,7 +26,7 @@ export class UserRepository implements IUserRepository {
 				// Vraćamo novog korisnika sa dodeljenim ID-om
 				return new User(
 					result.insertId,
-					user.editor,
+					user.uloga,
 					user.ime,
 					user.prezime,
 					user.mejl,
@@ -45,7 +45,7 @@ export class UserRepository implements IUserRepository {
 	async getById(id: number): Promise<User> {
 		try {
 			const query = `
-        SELECT id, editor, ime, prezime, mejl, lozinka 
+        SELECT id, uloga, ime, prezime, mejl, lozinka 
         FROM users
         WHERE id = ?
       `;
@@ -57,7 +57,7 @@ export class UserRepository implements IUserRepository {
 
 				return new User(
 					row.id,
-					row.editor,
+					row.uloga,
 					row.ime,
 					row.prezime,
 					row.mejl,
@@ -75,7 +75,7 @@ export class UserRepository implements IUserRepository {
 	async getByUsername(korisnickoIme: string): Promise<User> {
 		try {
 			const query = `
-        SELECT id, editor, ime, prezime, mejl, lozinka 
+        SELECT id, uloga, ime, prezime, mejl, lozinka 
         FROM users
         WHERE korisnickoIme = ?
       `;
@@ -87,7 +87,7 @@ export class UserRepository implements IUserRepository {
 
 				return new User(
 					row.id,
-					row.editor,
+					row.uloga,
 					row.ime,
 					row.prezime,
 					row.mejl,
@@ -105,7 +105,7 @@ export class UserRepository implements IUserRepository {
 	async getByEmail(mejl: string): Promise<User> {
 		try {
 			const query = `
-        SELECT id, editor, ime, prezime, mejl, lozinka 
+        SELECT id, uloga, ime, prezime, mejl, lozinka 
         FROM users
         WHERE mejl = ?
       `;
@@ -117,7 +117,7 @@ export class UserRepository implements IUserRepository {
 
 				return new User(
 					row.id,
-					row.editor,
+					row.uloga,
 					row.ime,
 					row.prezime,
 					row.mejl,
@@ -135,7 +135,7 @@ export class UserRepository implements IUserRepository {
 	async getAll(): Promise<User[]> {
 		try {
 			const query = `
-        SELECT id, editor, ime, prezime, mejl, lozinka 
+        SELECT id, uloga, ime, prezime, mejl, lozinka 
         FROM users
         ORDER BY id ASC
       `;
@@ -146,7 +146,7 @@ export class UserRepository implements IUserRepository {
 				(row) =>
 					new User(
 						row.id,
-						row.editor,
+						row.uloga,
 						row.ime,
 						row.prezime,
 						row.mejl,
@@ -163,12 +163,12 @@ export class UserRepository implements IUserRepository {
 		try {
 			const query = `
         UPDATE users
-        SET editor = ?, ime = ?, prezime = ?, mejl = ?, lozinka = ? 
+        SET uloga = ?, ime = ?, prezime = ?, mejl = ?, lozinka = ? 
         WHERE id = ?
       `;
 
 			const [result] = await db.execute<ResultSetHeader>(query, [
-				user.editor,
+				user.uloga,
 				user.ime,
 				user.prezime,
 				user.mejl,

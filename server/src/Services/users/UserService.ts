@@ -10,13 +10,13 @@ export class UserService implements IUserService {
   async getUserById(id: number): Promise<UserDTO> {
     var user = await this.userRepository.getById(id);
 
-    return new UserDTO(user.id, user.editor, user.ime, user.prezime, user.mejl);
+    return new UserDTO(user.id, user.uloga, user.ime, user.prezime, user.mejl);
   }
 
   async getUserByEmail(email: string): Promise<UserDTO> {
     var user = await this.userRepository.getByEmail(email);
 
-		return new UserDTO(user.id, user.editor, user.ime, user.prezime, user.mejl);
+		return new UserDTO(user.id, user.uloga, user.ime, user.prezime, user.mejl);
   }
     
 }

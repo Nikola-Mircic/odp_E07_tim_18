@@ -46,7 +46,7 @@ export class AuthService implements IAuthService {
 		const hashedPassword = await bcrypt.hash(user.lozinka, this.saltRounds);
 
 		const newUser = await this.userRepository.create(
-      new User(0, user.editor, user.ime, user.prezime, user.mejl, hashedPassword)
+      new User(0, user.uloga, user.ime, user.prezime, user.mejl, hashedPassword)
     );
 
 		return newUser.id; // Registracija nije uspela

@@ -1,6 +1,6 @@
 export class CreateUserDTO {
 	public constructor(
-		public editor: boolean = false,
+		public uloga: string = '',
 		public ime: string = "",
 		public prezime: string = "",
 		public mejl: string = "",

@@ -77,8 +77,12 @@ export class VestController {
   }
 
   private async getNewestNews(req: any, res: any): Promise<void> {
+    const {start, end} = req.body;
+
+    console.log(`${start}, ${end}`);
+
     try {
-      const vesti = await this.vestService.getNewestNews();
+      const vesti = await this.vestService.getNewestNews(start, end);
       res.status(StatusCodes.OK).json({ success: true, data: vesti });
 
     } catch (error) {
@@ -88,8 +92,11 @@ export class VestController {
   }
 
   private async getNajpopularnijeVesti(req: any, res: any): Promise<void> {
+    console.log(req.body);
+    const {start, end} = req.body;
+
     try {
-      const vesti = await this.vestService.getNajpolularnijeVesti();
+      const vesti = await this.vestService.getNajpolularnijeVesti(start, end);
       res.status(StatusCodes.OK).json({ success: true, data: vesti });
 
     } catch (error) {

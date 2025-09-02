@@ -1,4 +1,5 @@
 import { CreateUserDTO } from "../../DTOs/users/CreateUserDTO";
+import { UserDTO } from "../../DTOs/users/UserDTO";
 import { User } from "../../models/User";
 
 /**
