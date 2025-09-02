@@ -7,7 +7,7 @@ const USER_API_URL: string = import.meta.env.VITE_API_URL + "users";
 export const UserAPI : IUserAPIService = {
   async getUserById(id: number): Promise<UserResponse> {
      try {
-				const res = await axios.get<UserResponse>(`${USER_API_URL}/${id}`);
+				const res = await axios.get<UserResponse>(`${USER_API_URL}/id/${id}`);
 				return res.data;
 			} catch (error) {
 				let message = "Greška prilikom prijave.";

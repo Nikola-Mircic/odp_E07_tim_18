@@ -41,7 +41,7 @@ export class AuthController {
 
       // Proveravamo da li je prijava uspešna
       if (result !== 0) {
-        res.status( StatusCodes.OK ).json({success: true, message: 'Uspešna prijava', data: result});
+        res.status( StatusCodes.OK ).json({success: true, message: 'Uspešna prijava', data: { id: result }});
         return;
       } else {
         res.status( StatusCodes.UNAUTHORIZED ).json({success: false, message: 'Неисправно корисничко име или лозинка'});
