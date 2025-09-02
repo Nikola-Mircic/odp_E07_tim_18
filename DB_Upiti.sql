@@ -24,9 +24,9 @@ CREATE TABLE tags IF NOT EXISTS (
 -- Osiguranje da isti tag ne moze biti dodat vise puta za istu vest
 ALTER TABLE tags ADD UNIQUE `unique_index`(`id_vesti`, `naziv`);
 
-CREATE TABLE users IF NOT EXISTS (
+CREATE TABLE users (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    editor BOOL DEFAULT false,
+    uloga VARCHAR(20) DEFAULT false,
     ime VARCHAR(20) NOT NULL,
     prezime VARCHAR(20) NOT NULL,
     mejl VARCHAR(30) NOT NULL,
@@ -35,10 +35,10 @@ CREATE TABLE users IF NOT EXISTS (
 
 -- Unos podataka u tabele - primeri
 -- Korisnici
-INSERT INTO users(editor, ime, prezime, mejl, lozinka)
-VALUES (true, "Nikola", "Ljajic", "ljajic@newsstud.com", "12345");
-INSERT INTO users(editor, ime, prezime, mejl, lozinka)
-VALUES (false, "Nikola", "Mircic", "mircic@newsstud.com", "54321");
+INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
+VALUES ('urednik', "Nikola", "Ljajic", "ljajic@newsstud.com", "12345");
+INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
+VALUES ('citalac', "Nikola", "Mircic", "mircic@newsstud.com", "54321");
 
 -- Vesti
 INSERT INTO vesti (autor_id, naslov, tekst, slika, vreme)

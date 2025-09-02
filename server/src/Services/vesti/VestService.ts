@@ -1,30 +1,41 @@
 import { CreateVestDTO } from "../../Domain/DTOs/vesti/CreateVestDTO";
-import { Vest } from "../../Domain/models/Vest";
+import { VestDTO } from "../../Domain/DTOs/vesti/VestDTO";
+import { IUserRepository } from "../../Domain/repositories/users/IUserRepository";
 import { IVestRepository } from "../../Domain/repositories/vesti/IVestRepository";
 import { IVestService } from "../../Domain/services/vesti/IVestService";
 
 export class VestService implements IVestService {
+	public constructor(private vestRepository: IVestRepository, private userRepository: IUserRepository) {}
 
-  public constructor(private vestRepository: IVestRepository){}
+	async createVest(vest: CreateVestDTO): Promise<number> {
+    let user = await this.userRepository.getById(vest.autorId);
 
-  async createVest(vest: CreateVestDTO): Promise<Vest> {
-    return this.vestRepository.create(vest);
-  }
+    if(user.id == 0)
+      return 0;
 
-  getVestById(id: number): Promise<Vest> {
-    return this.vestRepository.getById(id);
-  }
+		return this.vestRepository.create(vest);
+	}
 
-  getSlicneVesti(id: number): Promise<Vest[]> {
-    return this.vestRepository.getSlicneVesti(id);
-  }
+	async getVestById(id: number): Promise<VestDTO> {
+		let vest = await this.vestRepository.getById(id);
 
-  getNewestNews(): Promise<Vest[]> {
-    return this.vestRepository.getByTime();
-  }
+    vest.brPregleda++;
 
-  getNajpolularnijeVesti(): Promise<Vest[]> {
-    return this.vestRepository.getByPopularity();
-  }
+    this.vestRepository.update(vest);
+
+    return vest;
+	}
+
+	getSlicneVesti(id: number): Promise<VestDTO[]> {
+		return this.vestRepository.getSlicneVesti(id);
+	}
+
+	getNewestNews(start: number, end: number): Promise<VestDTO[]> {
+		return this.vestRepository.getByTime(start, end);
+	}
+
+	getNajpolularnijeVesti(start: number, end: number): Promise<VestDTO[]> {
+		return this.vestRepository.getByPopularity(start, end);
+	}
 	// Implementacija servisa
 }
