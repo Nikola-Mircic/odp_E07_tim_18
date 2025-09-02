@@ -103,14 +103,13 @@ export class VestiRepository implements IVestRepository {
         SELECT v1.id, autor_id, ime, prezime, naslov, tekst, slika, vreme, br_pregleda
         FROM vesti v1
         JOIN users u1 ON v1.autor_id = u1.id
-        ORDER BY v1.br_pregleda DESC
-        LIMIT ?, ?
+        ORDER BY v1.br_pregleda, v1.vreme DESC
+        LIMIT ? OFFSET ?;
       `;
 
-
 			const [rows] = await db.execute<RowDataPacket[]>(query, [
-				`${start}`,
 				`${end - start}`,
+        `${start}`,
 			]);
 
 			return rows.map(

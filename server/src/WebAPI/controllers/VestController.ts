@@ -92,6 +92,7 @@ export class VestController {
   }
 
   private async getNajpopularnijeVesti(req: any, res: any): Promise<void> {
+    console.log(req.body);
     const {start, end} = req.body;
 
     try {
