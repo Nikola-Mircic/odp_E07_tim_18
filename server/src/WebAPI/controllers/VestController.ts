@@ -77,9 +77,8 @@ export class VestController {
   }
 
   private async getNewestNews(req: any, res: any): Promise<void> {
-    const {start, end} = req.body;
-
-    console.log(`${start}, ${end}`);
+    const start = req.query.start;
+    const end = req.query.end;
 
     try {
       const vesti = await this.vestService.getNewestNews(start, end);
@@ -92,8 +91,8 @@ export class VestController {
   }
 
   private async getNajpopularnijeVesti(req: any, res: any): Promise<void> {
-    console.log(req.body);
-    const {start, end} = req.body;
+    const start = req.query.start;
+		const end = req.query.end;
 
     try {
       const vesti = await this.vestService.getNajpolularnijeVesti(start, end);
