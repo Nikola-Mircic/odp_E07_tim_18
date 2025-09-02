@@ -1,5 +1,6 @@
-import type { UserResponse } from "../../types/users/UserResponse";
+import type { UserDto } from "../../models/users/UserDTO";
+import type { ApiResponse } from "../../types/common/ApiResponse";
 
 export interface IUserAPIService {
-  getUserById(id: number): Promise<UserResponse>;
+  getUserById(id: number): Promise<ApiResponse<UserDto>>;
 }

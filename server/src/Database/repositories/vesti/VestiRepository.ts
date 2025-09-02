@@ -15,7 +15,7 @@ export class VestiRepository implements IVestRepository {
         JOIN tags t2 
             ON t1.naziv = t2.naziv
         JOIN users u1 ON v1.autor_id = u1.id
-        WHERE t2.id_vesti = 3 AND t1.id_vesti != t2.id_vesti
+        WHERE t2.id_vesti = ? AND t1.id_vesti != t2.id_vesti
         GROUP BY t1.id_vesti, t2.id_vesti
         HAVING COUNT(*) >= 2;
       `;
