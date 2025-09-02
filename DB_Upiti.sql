@@ -36,9 +36,9 @@ CREATE TABLE users (
 -- Unos podataka u tabele - primeri
 -- Korisnici
 INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
-VALUES ('urednik', "Nikola", "Ljajic", "ljajic@newsstud.com", "12345");
+VALUES ('urednik', "Nikola", "Ljajic", "ljajic@newsstud.com", "$2b$10$.omjoIy7s203S14EJ9z1IuEJ39vk9Fqk2Tr/g2UvpTgQHZPs43m1K");
 INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
-VALUES ('citalac', "Nikola", "Mircic", "mircic@newsstud.com", "54321");
+VALUES ('citalac', "Nikola", "Mircic", "mircic@newsstud.com", "$2b$10$f0avo75kgBoxxirOaKz9SeaNxkbVCAZqTXQBfxW/BZf9Z4hW.cW6G");
 
 -- Vesti
 INSERT INTO vesti (autor_id, naslov, tekst, slika, vreme)
