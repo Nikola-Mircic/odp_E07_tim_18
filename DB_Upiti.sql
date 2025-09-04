@@ -24,13 +24,24 @@ CREATE TABLE tags IF NOT EXISTS (
 -- Osiguranje da isti tag ne moze biti dodat vise puta za istu vest
 ALTER TABLE tags ADD UNIQUE `unique_index`(`id_vesti`, `naziv`);
 
-CREATE TABLE users (
+-- Tabela za korisnike --
+CREATE TABLE users IF NOT EXISTS (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     uloga VARCHAR(20) DEFAULT false,
     ime VARCHAR(20) NOT NULL,
     prezime VARCHAR(20) NOT NULL,
     mejl VARCHAR(30) NOT NULL,
     lozinka VARCHAR(64) NOT NULL
+);
+
+-- Tabela za komentare
+ --
+CREATE TABLE comments IF NOT EXISTS (
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    autor_id INT NOT NULL,
+    vest_id INT NOT NULL,
+    tekst TEXT NOT NULL,
+    vreme DATETIME NOT NULL
 );
 
 -- Unos podataka u tabele - primeri
@@ -78,3 +89,22 @@ INSERT INTO tags (id_vesti, naziv)
 VALUES (4, "world cup");
 INSERT INTO tags (id_vesti, naziv)
 VALUES (4, "fudbal");
+
+-- Komentari --
+-- Svaka vest ima po dva komentara --
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 4, 1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 3, 1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 4, 2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 3, 2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 4, 3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 3, 3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 4, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
+VALUES ( 3, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");

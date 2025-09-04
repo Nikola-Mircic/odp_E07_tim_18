@@ -63,6 +63,7 @@ const NewsDetail: React.FC = () => {
         ))}
       </div>
 
+
       {/* Forma za dodavanje komentara */}
       <AddComment
         onAdd={(username, content) =>

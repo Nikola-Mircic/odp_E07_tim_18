@@ -7,6 +7,27 @@ export class UserService implements IUserService {
 
   public constructor(private userRepository: IUserRepository) {}
 
+  async updateUser(user: UserDTO): Promise<UserDTO> {
+    var currentUser = await this.userRepository.getById(user.id);
+
+    if(currentUser.id == 0)
+      return new UserDTO();
+
+    var updated = await this.userRepository.update(new User(
+      user.id,
+      user.ime,
+      user.prezime,
+      user.prezime,
+      user.mejl,
+      currentUser.lozinka
+    ));
+
+    if(updated.id == 0)
+      return new UserDTO();
+
+    return user;
+  }
+
   async getUserById(id: number): Promise<UserDTO> {
     var user = await this.userRepository.getById(id);
 

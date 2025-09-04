@@ -1,5 +1,5 @@
 import { CreateVestDTO } from "../../DTOs/vesti/CreateVestDTO";
-import { VestDTO } from "../../DTOs/vesti/VestDTO";
+import { Vest } from "../../models/Vest";
 
 export interface IVestRepository {
 	/**
@@ -12,9 +12,9 @@ export interface IVestRepository {
 	/**
 	 * Vrati vest na osnovu ID-ja
 	 * @param id - ID vesti
-	 * @returns VestDTO sa zadatim ID-jem
+	 * @returns Vest sa zadatim ID-jem
 	 */
-	getById(id: number): Promise<VestDTO>;
+	getById(id: number): Promise<Vest>;
 
 	/**
 	 * Vrati najpopularnije vesti u opsegu
@@ -22,7 +22,7 @@ export interface IVestRepository {
 	 * @param end - kraj opsega
 	 * @returns Niz najpopularnijih vesti u opsegu [start, end)
 	 */
-	getByPopularity(start: number, end: number): Promise<VestDTO[]>;
+	getByPopularity(start: number, end: number): Promise<Vest[]>;
 
 	/**
 	 * Vrati najnovije vesti u opsegu
@@ -30,14 +30,14 @@ export interface IVestRepository {
 	 * @param end - kraj opsega
 	 * @returns Niz najnovijih vesti u opsegu [start, end)
 	 * */
-	getByTime(start: number, end: number): Promise<VestDTO[]>;
+	getByTime(start: number, end: number): Promise<Vest[]>;
 
 	/**
 	 * Azurira vest u bazi
 	 * @param vest - vest koja se azurira
 	 * @returns Azurirana vest
 	 */
-	update(vest: VestDTO): Promise<VestDTO>;
+	update(vest: Vest): Promise<Vest>;
 
 	/**
 	 * Brise vest iz baze
@@ -51,5 +51,5 @@ export interface IVestRepository {
 	 * @param id - ID vesti
 	 * @returns Niz slicnih vesti
 	 */
-	getSlicneVesti(id: number): Promise<VestDTO[]>;
+	getSlicneVesti(id: number): Promise<Vest[]>;
 }

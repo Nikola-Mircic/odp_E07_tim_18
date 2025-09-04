@@ -1,9 +1,10 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { ITagRepository } from "../../../Domain/repositories/tags/ITagRepository";
 import db from "../../connection/DbConnectionPool";
+import { Tag } from "../../../Domain/models/Tag";
 
 export class TagRepository implements ITagRepository {
-  async getAllFor(id_vesti: number): Promise<string[]> {
+  async getAllFor(id_vesti: number): Promise<Tag[]> {
     try {
       const query = `
         SELECT naziv
@@ -13,7 +14,7 @@ export class TagRepository implements ITagRepository {
 
       const [rows] = await db.execute<RowDataPacket[]>(query, [id_vesti]);
 
-      return rows.map(row => row.naziv);
+      return rows.map(row => new Tag(id_vesti, row.naziv));
     } catch {
       return [];
     }

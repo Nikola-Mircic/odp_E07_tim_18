@@ -1,11 +1,9 @@
+import { UserDTO } from "../users/UserDTO";
+
 export class VestDTO {
 	public constructor(
 		public id: number = 0,
-		public autor: {
-			id: number;
-			ime: string;
-			prezime: string;
-		} = { id: 0, ime: "", prezime: "" },
+		public autor: UserDTO = new UserDTO(),
 		public naslov: string = "",
 		public tekst: string = "",
 		public slika: string = "",
