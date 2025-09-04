@@ -1,10 +1,8 @@
+import type { UserDto } from "../users/UserDTO";
+
 export interface VestDto {
 	id: number;
-	autor: {
-		id: number;
-		ime: string;
-		prezime: string;
-	};
+	autor: UserDto;
 	naslov: string;
 	tekst: string;
 	slika: string;
