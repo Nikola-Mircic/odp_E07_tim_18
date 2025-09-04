@@ -3,18 +3,17 @@ import { CreateVestDTO } from "../../../Domain/DTOs/vesti/CreateVestDTO";
 import { IVestRepository } from "../../../Domain/repositories/vesti/IVestRepository";
 
 import db from "../../connection/DbConnectionPool";
-import { VestDTO } from "../../../Domain/DTOs/vesti/VestDTO";
+import { Vest } from "../../../Domain/models/Vest";
 
 export class VestiRepository implements IVestRepository {
-	async getSlicneVesti(id: number): Promise<VestDTO[]> {
+	async getSlicneVesti(id: number): Promise<Vest[]> {
 		try {
 			const query = `
-        SELECT v1.id, v1.autor_id, u1.ime, u1.prezime, v1.naslov, v1.tekst, v1.slika, v1.vreme, v1.br_pregleda
+        SELECT v1.id, v1.autor_id, v1.naslov, v1.tekst, v1.slika, v1.vreme, v1.br_pregleda
         FROM vesti v1
         JOIN tags t1 ON v1.id = t1.id_vesti INNER
         JOIN tags t2 
             ON t1.naziv = t2.naziv
-        JOIN users u1 ON v1.autor_id = u1.id
         WHERE t2.id_vesti = ? AND t1.id_vesti != t2.id_vesti
         GROUP BY t1.id_vesti, t2.id_vesti
         HAVING COUNT(*) >= 2;
@@ -23,13 +22,9 @@ export class VestiRepository implements IVestRepository {
 			const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
 			return rows.map(
 				(row) =>
-					new VestDTO(
+					new Vest(
 						row.id,
-						{
-							id: row.autor_id,
-							ime: row.ime,
-							prezime: row.prezime,
-						},
+						row.autor_id,
 						row.naslov,
 						row.tekst,
 						row.slika,
@@ -63,26 +58,21 @@ export class VestiRepository implements IVestRepository {
 		}
 	}
 
-	async getById(id: number): Promise<VestDTO> {
+	async getById(id: number): Promise<Vest> {
 		try {
 			const query = `
-        SELECT v1.id, autor_id, ime, prezime, naslov, tekst, slika, vreme, br_pregleda
-        FROM vesti v1
-        JOIN users u1 ON v1.autor_id = u1.id
-        WHERE v1.id = ?;
+        SELECT id, autor_id naslov, tekst, slika, vreme, br_pregleda
+        FROM vesti 
+        WHERE id = ?;
       `;
 
 			const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
 
 			if (rows.length > 0) {
 				const row = rows[0];
-				return new VestDTO(
+				return new Vest(
 					row.id,
-					{
-						id: row.autor_id,
-						ime: row.ime,
-						prezime: row.prezime,
-					},
+					row.autor_id,
 					row.naslov,
 					row.tekst,
 					row.slika,
@@ -91,19 +81,18 @@ export class VestiRepository implements IVestRepository {
 				);
 			}
 
-			return new VestDTO();
+			return new Vest();
 		} catch {
-			return new VestDTO();
+			return new Vest();
 		}
 	}
 
-	async getByPopularity(start: number, end: number): Promise<VestDTO[]> {
+	async getByPopularity(start: number, end: number): Promise<Vest[]> {
 		try {
 			const query = `
-        SELECT v1.id, autor_id, ime, prezime, naslov, tekst, slika, vreme, br_pregleda
-        FROM vesti v1
-        JOIN users u1 ON v1.autor_id = u1.id
-        ORDER BY v1.br_pregleda, v1.vreme DESC
+        SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
+        FROM vesti
+        ORDER BY br_pregleda, vreme DESC
         LIMIT ? OFFSET ?;
       `;
 
@@ -114,13 +103,9 @@ export class VestiRepository implements IVestRepository {
 
 			return rows.map(
 				(row) =>
-					new VestDTO(
+					new Vest(
 						row.id,
-						{
-							id: row.autor_id,
-							ime: row.ime,
-							prezime: row.prezime,
-						},
+						row.autor_id,
 						row.naslov,
 						row.tekst,
 						row.slika,
@@ -133,13 +118,12 @@ export class VestiRepository implements IVestRepository {
 		}
 	}
 
-	async getByTime(start: number, end: number): Promise<VestDTO[]> {
+	async getByTime(start: number, end: number): Promise<Vest[]> {
 		try {
 			const query = `
-        SELECT v1.id, autor_id, ime, prezime, naslov, tekst, slika, vreme, br_pregleda
-        FROM vesti v1
-        JOIN users u1 ON v1.autor_id = u1.id
-        ORDER BY v1.vreme DESC
+        SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
+        FROM vesti
+        ORDER BY vreme DESC
         LIMIT ? OFFSET ?;
       `;
 
@@ -150,13 +134,9 @@ export class VestiRepository implements IVestRepository {
 
 			return rows.map(
 				(row) =>
-					new VestDTO(
+					new Vest(
 						row.id,
-						{
-              id: row.autor_id,
-              ime: row.ime,
-              prezime: row.prezime,
-            },
+						row.autor_id,
 						row.naslov,
 						row.tekst,
 						row.slika,
@@ -170,7 +150,7 @@ export class VestiRepository implements IVestRepository {
 		}
 	}
 
-	async update(vest: VestDTO): Promise<VestDTO> {
+	async update(vest: Vest): Promise<Vest> {
 		try {
 			const query = `
         UPDATE vesti
@@ -179,12 +159,12 @@ export class VestiRepository implements IVestRepository {
       `;
 
 			const [result] = await db.execute<ResultSetHeader>(query, [
-				vest.autor.id,
+				vest.autorId,
 				vest.naslov,
 				vest.tekst,
 				vest.slika,
 				vest.vreme,
-				vest.brPregleda,
+				vest.br_pregleda,
 				vest.id,
 			]);
 
@@ -192,9 +172,9 @@ export class VestiRepository implements IVestRepository {
 				return vest;
 			}
 
-			return new VestDTO();
+			return new Vest();
 		} catch {
-			return new VestDTO();
+			return new Vest();
 		}
 	}
 
