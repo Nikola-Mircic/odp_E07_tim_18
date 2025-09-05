@@ -3,6 +3,8 @@ import { IVestService } from "../../Domain/services/vesti/IVestService";
 import { CreateVestDTO } from "../../Domain/DTOs/vesti/CreateVestDTO";
 import { StatusCodes } from "../../Domain/constants/StatusCodes";
 import { IUserService } from "../../Domain/services/users/IUserService";
+import { authenticate } from "../middlewere/authentication";
+import { authorize } from "../middlewere/authorization";
 
 export class VestController {
   private router: Router;
@@ -17,7 +19,7 @@ export class VestController {
   }
 
   private initializeRoutes() {
-    this.router.post('/vesti', this.createVest.bind(this));
+    this.router.post('/vesti', authenticate, authorize('editor') ,this.createVest.bind(this));
     this.router.get('/vesti/id/:id', this.getVestById.bind(this));
     this.router.get("/vesti/id/:id/slicne", this.getSlicneVesti.bind(this));
     this.router.get("/vesti/najnovije", this.getNewestNews.bind(this));

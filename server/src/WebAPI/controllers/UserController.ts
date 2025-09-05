@@ -4,6 +4,8 @@ import { StatusCodes } from "../../Domain/constants/StatusCodes";
 import { UserDTO } from "../../Domain/DTOs/users/UserDTO";
 import { emailValidator } from "../validators/auth/EmailValidator";
 import { CreateUserDTO } from "../../Domain/DTOs/users/CreateUserDTO";
+import { authenticate } from "../middlewere/authentication";
+import { authorize } from "../middlewere/authorization";
 
 export class UserController {
 	private router: Router;
@@ -18,7 +20,7 @@ export class UserController {
 	private initializeRoutes(): void {
 		this.router.get("/users/id/:id", this.getUserById.bind(this));
 		this.router.get("/users/email/:email", this.getUserByEmail.bind(this));
-		this.router.put("/users/", this.updateUser.bind(this));
+		this.router.put("/users/", authenticate, this.updateUser.bind(this));
 	}
 
 	/**

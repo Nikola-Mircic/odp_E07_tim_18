@@ -1,11 +1,9 @@
-import { blob } from "stream/consumers";
-import { UserLoginDto } from "../../Domain/DTOs/auth/UserLoginDto";
 import { CreateUserDTO } from "../../Domain/DTOs/users/CreateUserDTO";
 import { User } from "../../Domain/models/User";
 import { IUserRepository } from "../../Domain/repositories/users/IUserRepository";
 import { IAuthService } from "../../Domain/services/auth/IAuthService";
 import bcrypt from "bcryptjs";
-
+import jwt from "jsonwebtoken";
 export class AuthService implements IAuthService {
 	private readonly saltRounds: number = parseInt(
 		process.env.SALT_ROUNDS || "10",
@@ -20,35 +18,53 @@ export class AuthService implements IAuthService {
 	 * @param lozinka - Lozinka korisnika
 	 * @return userLoginDto - DTO sa userid i mejlom
 	 */
-	async prijava(mejl: string, lozinka: string): Promise<number> {
+	async prijava(mejl: string, lozinka: string): Promise<string> {
 		const user = await this.userRepository.getByEmail(mejl);
 
-    var validPassword: boolean = await bcrypt.compare(lozinka, user.lozinka);
+    if (user.id == 0) {
+      return ""; // Neispravan mejl
+    }
 
-    console.log("Valid password: " + validPassword);
-    console.log("For user: " + user.mejl + " with id: " + user.id);
+		var validPassword: boolean = await bcrypt.compare(lozinka, user.lozinka);
+    if (!validPassword) {
+      return ""; // Neispravna lozinka
+    }
 
-		if (user.id !== 0 && (await bcrypt.compare(lozinka, user.lozinka))) {
-			return user.id;
-		}
+		const token = jwt.sign(
+			{
+				id: user.id,
+				uloga: user.uloga,
+			},
+			process.env.JWT_SECRET ?? "",
+			{ expiresIn: "6h" }
+		);
 
-		return 0; // Neispravno korisničko ime ili lozinka
+    return token;
 	}
 
-	async registracija(user: CreateUserDTO): Promise<number> {
+	async registracija(user: CreateUserDTO): Promise<string> {
 		const existingUser = await this.userRepository.getByEmail(user.mejl);
 
 		if (existingUser.id !== 0) {
-			return 0; // Korisnik već postoji
+			return ""; // Korisnik već postoji
 		}
 
 		// Hash-ujemo lozinku pre čuvanja
 		const hashedPassword = await bcrypt.hash(user.lozinka, this.saltRounds);
 
 		const newUser = await this.userRepository.create(
-      new User(0, user.uloga, user.ime, user.prezime, user.mejl, hashedPassword)
-    );
+			new User(0, user.uloga, user.ime, user.prezime, user.mejl, hashedPassword)
+		);
 
-		return newUser.id; // Registracija nije uspela
+		const token = jwt.sign(
+			{
+				id: newUser.id,
+				uloga: newUser.uloga,
+			},
+			process.env.JWT_SECRET ?? "",
+			{ expiresIn: "6h" }
+		);
+
+		return token;
 	}
 }
