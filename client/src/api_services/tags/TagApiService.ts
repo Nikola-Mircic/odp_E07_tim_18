@@ -6,8 +6,8 @@ import type { ITagApiService } from "./ITagApiService";
 const TAGS_API_URL: string = import.meta.env.VITE_API_URL + "tags";
 
 export const tagApi: ITagApiService = {
-  tagsForVest: async function (id_vesti: number): Promise<ApiResponse<Tag[]>> {
-    try {
+	tagsForVest: async function (id_vesti: number): Promise<ApiResponse<Tag[]>> {
+		try {
 			const res = await axios.get<ApiResponse<Tag[]>>(
 				`${TAGS_API_URL}/for/${id_vesti}`
 			);
@@ -23,19 +23,23 @@ export const tagApi: ITagApiService = {
 				data: [],
 			};
 		}
-  },
+	},
 
-  addTag: async function (id_vesti: number, naziv: string): Promise<ApiResponse<boolean>> {
-    try {
-			const res = await axios.post<ApiResponse<boolean>>(
-				`${TAGS_API_URL}/`,
-        {
-          data: {
-            id_vesti: id_vesti,
-            naziv: naziv
-          }
-        }
-			);
+	addTag: async function (
+		token: string,
+		id_vesti: number,
+		naziv: string
+	): Promise<ApiResponse<boolean>> {
+		try {
+			const res = await axios.post<ApiResponse<boolean>>(`${TAGS_API_URL}/`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				data: {
+					id_vesti: id_vesti,
+					naziv: naziv,
+				},
+			});
 			return res.data;
 		} catch (error) {
 			let message = "Greška prilikom ucitavanja tagova!";
@@ -45,14 +49,23 @@ export const tagApi: ITagApiService = {
 			return {
 				success: false,
 				message,
-				data: false
+				data: false,
 			};
 		}
-  },
-  removeTag: async function (id_vesti: number, naziv: string): Promise<ApiResponse<boolean>> {
-    try {
+	},
+	removeTag: async function (
+		token: string,
+		id_vesti: number,
+		naziv: string
+	): Promise<ApiResponse<boolean>> {
+		try {
 			const res = await axios.delete<ApiResponse<boolean>>(
-				`${TAGS_API_URL}/${id_vesti}/${naziv}`
+				`${TAGS_API_URL}/${id_vesti}/${naziv}`,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
 			);
 			return res.data;
 		} catch (error) {
@@ -66,6 +79,6 @@ export const tagApi: ITagApiService = {
 				data: false,
 			};
 		}
-  }
-}
+	},
+};
  

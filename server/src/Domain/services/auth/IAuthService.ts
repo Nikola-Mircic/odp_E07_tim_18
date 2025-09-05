@@ -6,14 +6,14 @@ export interface IAuthService {
 	 * Prijavljuje korisnika sa datim korisničkim imenom i lozinkom.
 	 * @param mejl - Mejl korisnika.
 	 * @param lozinka - Lozinka korisnika.
-	 * @returns ID korisnika ako je prijava uspesna ( 0 ako nije ).
+	 * @returns JWT token
 	 */
-	prijava(mejl: string, lozinka: string): Promise<number>;
+	prijava(mejl: string, lozinka: string): Promise<string>;
 
 	/**
 	 * Registruje novog korisnika sa datim korisničkim imenom i lozinkom.
 	 * @param user - Podaci o korisniku za registraciju.
-	 * @returns ID korisnika ako je registracija uspesna ( 0 ako nije ).
+	 * @returns JWT token
 	 */
-	registracija(user: CreateUserDTO): Promise<number>;
+	registracija(user: CreateUserDTO): Promise<string>;
 }

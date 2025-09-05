@@ -2,6 +2,8 @@ import { Router } from "express";
 import { ITagService } from "../../Domain/services/tags/ITagService";
 import { StatusCodes } from "../../Domain/constants/StatusCodes";
 import { Tag } from "../../Domain/models/Tag";
+import { authenticate } from "../middlewere/authentication";
+import { authorize } from "../middlewere/authorization";
 
 export class TagController {
 	private router: Router;
@@ -16,8 +18,13 @@ export class TagController {
 
 	private initializeRoutes(): void {
 		this.router.get("/tags/for/:id_vest", this.getTagsFor.bind(this));
-		this.router.post("/tags", this.addTag.bind(this));
-		this.router.delete("/tags/:vest_id/:tag", this.removeTag.bind(this));
+		this.router.post("/tags", authenticate, authorize('editor'), this.addTag.bind(this));
+		this.router.delete(
+			"/tags/:vest_id/:tag",
+			authenticate,
+			authorize("editor"),
+			this.removeTag.bind(this)
+		);
 	}
 
 	public getRouter(): Router {

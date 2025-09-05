@@ -3,6 +3,8 @@ import { ICommentService } from "../../Domain/services/comments/IComentService";
 import { StatusCodes } from "../../Domain/constants/StatusCodes";
 import { CommentDto } from "../../Domain/DTOs/comments/CommentDto";
 import { AddCommentDto } from "../../Domain/DTOs/comments/AddCommnetDto";
+import { authenticate } from "../middlewere/authentication";
+import { authorize } from "../middlewere/authorization";
 
 export class CommentController {
 	private router: Router;
@@ -17,7 +19,7 @@ export class CommentController {
 	private initializeRoutes(): void {
 		this.router.get("/comments/id/:id", this.getById.bind(this));
 		this.router.get("/comments/for/:vestId", this.getForVest.bind(this));
-		this.router.post("/comments", this.createComment.bind(this));
+		this.router.post("/comments", authenticate, authorize('citalac', 'editor'), this.createComment.bind(this));
 	}
 
   public getRouter(): Router{

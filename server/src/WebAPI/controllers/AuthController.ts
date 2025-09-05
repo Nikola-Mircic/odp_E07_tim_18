@@ -40,8 +40,8 @@ export class AuthController {
       const result = await this.authService.prijava(mejl, lozinka);
 
       // Proveravamo da li je prijava uspešna
-      if (result !== 0) {
-        res.status( StatusCodes.OK ).json({success: true, message: 'Uspešna prijava', data: { id: result }});
+      if (result.length > 0) {
+        res.status( StatusCodes.OK ).json({success: true, message: 'Uspešna prijava', data: { token: result }});
         return;
       } else {
         res.status( StatusCodes.UNAUTHORIZED ).json({success: false, message: 'Неисправно корисничко име или лозинка'});
@@ -71,8 +71,8 @@ export class AuthController {
       const result = await this.authService.registracija(user);
 
       // Proveravamo da li je registracija uspešna
-      if (result !== 0) {
-        res.status(StatusCodes.OK).json({success: true, message: 'Uspešna registracija', data: { id: result }});
+      if (result.length > 0) {
+        res.status(StatusCodes.OK).json({success: true, message: 'Uspešna registracija', data: { token: result }});
       } else {
         res.status(StatusCodes.BAD_REQUEST).json({success: false, message: 'Регистрација није успела. Корисничко име већ постоји.', });
       }

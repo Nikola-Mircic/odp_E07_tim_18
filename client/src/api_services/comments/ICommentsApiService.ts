@@ -9,7 +9,9 @@ export interface ICommentApIService {
 	 * @param vestId - Id vesti za koju se traze komentari
 	 * @returns Niz komentara na vest
 	 */
-	getCommentsForVest(vestId: number): Promise<ApiResponse<CommentDto[]>>;
+	getCommentsForVest(
+		vestId: number
+	): Promise<ApiResponse<CommentDto[]>>;
 
 	/**
 	 * **getCommentById** - Vraca komentar za prosledjeni ```id```
@@ -23,5 +25,8 @@ export interface ICommentApIService {
 	 * @param comment - *AddCommentType* sa pdoacima
 	 * @returns Napravljeni komentar
 	 */
-	createComment(comment: AddCommentType): Promise<ApiResponse<CommentDto>>;
+	createComment(
+		token: string,
+		comment: AddCommentType
+	): Promise<ApiResponse<CommentDto>>;
 }
