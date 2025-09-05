@@ -47,9 +47,9 @@ CREATE TABLE comments IF NOT EXISTS (
 -- Unos podataka u tabele - primeri
 -- Korisnici
 INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
-VALUES ('urednik', "Nikola", "Ljajic", "ljajic@newsstud.com", "$2b$10$.omjoIy7s203S14EJ9z1IuEJ39vk9Fqk2Tr/g2UvpTgQHZPs43m1K");
+VALUES ('editro', "Nikola", "Ljajic", "ljajic@newsstud.com", "$2b$10$.omjoIy7s203S14EJ9z1IuEJ39vk9Fqk2Tr/g2UvpTgQHZPs43m1K");
 INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
-VALUES ('citalac', "Nikola", "Mircic", "mircic@newsstud.com", "$2b$10$f0avo75kgBoxxirOaKz9SeaNxkbVCAZqTXQBfxW/BZf9Z4hW.cW6G");
+VALUES ('user', "Nikola", "Mircic", "mircic@newsstud.com", "$2b$10$f0avo75kgBoxxirOaKz9SeaNxkbVCAZqTXQBfxW/BZf9Z4hW.cW6G");
 
 -- Vesti
 INSERT INTO vesti (autor_id, naslov, tekst, slika, vreme)
@@ -93,18 +93,18 @@ VALUES (4, "fudbal");
 -- Komentari --
 -- Svaka vest ima po dva komentara --
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 4, 1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 1, 1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 3, 1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 2, 1, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 4, 2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 1, 2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 3, 2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 2, 2, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 4, 3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 1, 3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 3, 3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 2, 3, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 4, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 1, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
-VALUES ( 3, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+VALUES ( 2, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
