@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useFetch = <T,>(fetchFunc : () => Promise<T>) => {
+const useFetch = <T,>(fetchFunc : (...params: any) => Promise<T>, ...params: any[]) => {
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
@@ -10,7 +10,7 @@ const useFetch = <T,>(fetchFunc : () => Promise<T>) => {
             setLoading(true);
             setError(null);
 
-            const result = await fetchFunc();
+            const result = await fetchFunc(...params);
 
             setData(result);
         } catch(e) {

@@ -5,7 +5,7 @@ import type { VestDto } from "../models/vesti/VestDto";
 import type { ApiResponse } from "../types/common/ApiResponse";
 
 const NewsFeed = () => {
-  const {data, loading, error} = useFetch<ApiResponse<VestDto[]> | undefined>(() => vestiApi.getNajpopularnije(0, 4));
+  const {data, loading, error} = useFetch<ApiResponse<VestDto[]>>(vestiApi.getNajpopularnije, 0, 4);
 
 
   if(loading) return <div>Loading...</div>
@@ -15,8 +15,6 @@ const NewsFeed = () => {
   var news = data.data;
   if(!news)
     return <div>No data returned!</div>
-
-  console.log(news);
 
   return (
 		<div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
