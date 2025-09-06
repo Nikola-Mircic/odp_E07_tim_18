@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SačuvajVrednostPoKljuču } from "../../helpers/local_storage";
+import { SačuvajVrednostPoKljuču } from "../../helpers/session_storage";
 import type { AuthFormProps } from "../../types/props/auth_form_props/AuthFormProps";
 import { validacijaPodatakaAuth } from "../../api_services/validators/auth/AuthValidator";
 import { useAuth } from "../../hooks/useAuthHook";

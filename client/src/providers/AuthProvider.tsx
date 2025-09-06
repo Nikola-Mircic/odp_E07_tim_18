@@ -3,7 +3,7 @@ import type { AuthContextType } from "../types/auth/AuthContext";
 import type { JwtTokenClaims } from "../types/auth/JwtTokenClaims";
 import { jwtDecode } from "jwt-decode";
 import type { AuthUser } from "../types/auth/AuthUser";
-import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostPoKljuču } from "../helpers/local_storage";
+import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostPoKljuču } from "../helpers/session_storage";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
