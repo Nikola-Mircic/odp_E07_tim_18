@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import NewsFeed from "./pages/NewsFeed";
 import NewsDetail from "./pages/NewsDetail";
-import Login from "./pages/Login";
+import LoginPage from "./pages/LoginPage";
 import Profile from "./pages/Profile";
 
 const App: React.FC = () => {
@@ -18,7 +18,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<NewsFeed />} />
         <Route path="/news/:id" element={<NewsDetail />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<p>404 Stranica nije pronađena</p>} />
       </Routes>

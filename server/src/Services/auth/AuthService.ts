@@ -21,10 +21,12 @@ export class AuthService implements IAuthService {
 	async prijava(mejl: string, lozinka: string): Promise<string> {
 		const user = await this.userRepository.getByEmail(mejl);
 
+    console.log(user);
     if (user.id == 0) {
       return ""; // Neispravan mejl
     }
 
+    console.log(lozinka);
 		var validPassword: boolean = await bcrypt.compare(lozinka, user.lozinka);
     if (!validPassword) {
       return ""; // Neispravna lozinka

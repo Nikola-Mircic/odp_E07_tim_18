@@ -1,31 +1,30 @@
-import React, { use, useState} from "react";
+import React, { use, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
+import LoginForma from "../components/autentifikacija/LoginForm";
+import { authApi } from "../api_services/auth/AuthAPIService";
+import { useAuth } from "../hooks/useAuthHook";
 
-const Login: React.FC = () => {
+const LoginPage: React.FC = () => {
+    const { isAuthenticated, user } = useAuth();
+		const navigate = useNavigate();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+		useEffect(() => {
+      console.log(isAuthenticated, user);
+			if (isAuthenticated && user) navigate(`/`);
+		}, []);
 
-    const mockUser = {
-        email: "test@example.com", 
-        password: "45245"
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (email === mockUser.email && password === mockUser.password){
-            setError("");
-            localStorage.setItem("loggedIn", "true");
-            navigate("/");
-        }else{
-            setError("Pogresan email ili lozinka");
-        }
-    };
-    
     return (
-        <div className="max-w-md mx-auto mt-10 p-4 border rounded">
+      LoginForma({
+          authApi: authApi,
+          onLoginSuccess: () => navigate("/")
+      })
+    );
+};
+
+export default LoginPage;
+
+/*
+<div className="max-w-md mx-auto mt-10 p-4 border rounded">
             <h1 className="text-2x1 mb-4">Login stranica</h1>
             {error && <p className="text-red-500 mb-2">{error}</p>}
             <form onSubmit={handleSubmit}>
@@ -54,7 +53,4 @@ const Login: React.FC = () => {
                     </button>
             </form>
         </div>
-    );
-};
-
-export default Login;
+*/
