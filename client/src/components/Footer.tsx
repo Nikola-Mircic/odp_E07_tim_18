@@ -1,9 +1,11 @@
 import React from "react";
 
-const Footer: React.FC = () => {
+const Footer = () => {
   return (
-    <footer className="bg-gray-200 p-4 mt-10 text-center">
-      <p>© 2025 NewsStud. Sva prava zadržana.</p>
+    <footer className="bg-gray-900 text-gray-300 py-6 mt-8">
+      <div className="container mx-auto px-4 text-center text-sm">
+        © {new Date().getFullYear()} MyNews. Sva prava zadržana.
+      </div>
     </footer>
   );
 };

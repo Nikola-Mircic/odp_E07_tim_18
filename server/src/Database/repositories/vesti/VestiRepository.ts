@@ -98,7 +98,7 @@ export class VestiRepository implements IVestRepository {
 
 			const [rows] = await db.execute<RowDataPacket[]>(query, [
 				`${end - start}`,
-        `${start}`,
+				`${start}`,
 			]);
 
 			return rows.map(
@@ -129,7 +129,7 @@ export class VestiRepository implements IVestRepository {
 
 			const [rows] = await db.execute<RowDataPacket[]>(query, [
 				`${end - start}`,
-        `${start}`,
+				`${start}`,
 			]);
 
 			return rows.map(
@@ -145,7 +145,7 @@ export class VestiRepository implements IVestRepository {
 					)
 			);
 		} catch (err) {
-      console.log(err)
+			console.log(err)
 			return [];
 		}
 	}
