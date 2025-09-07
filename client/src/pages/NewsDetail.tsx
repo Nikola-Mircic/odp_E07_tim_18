@@ -5,6 +5,7 @@ import Comment from "../components/Comment";
 import AddComment from "../components/AddComment";
 import type { VestDto } from "../models/vesti/VestDto";
 import { vestiApi } from "../api_services/vesti/VestAPIService";
+import CommentsBox from "../components/comments/CommentsBox";
 
 interface CommentType {
   username: string;
@@ -70,7 +71,10 @@ const NewsDetail: React.FC = () => {
           setComments([...comments, { username, content }])
         }
       />
+      <CommentsBox vestId={Number(id)} />
+
     </div>
+    
   );
 };
 
