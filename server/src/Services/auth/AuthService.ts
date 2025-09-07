@@ -48,6 +48,7 @@ export class AuthService implements IAuthService {
 		if (existingUser.id !== 0) {
 			return ""; // Korisnik već postoji
 		}
+		
 
 		// Hash-ujemo lozinku pre čuvanja
 		const hashedPassword = await bcrypt.hash(user.lozinka, this.saltRounds);

@@ -6,7 +6,7 @@ CREATE DATABASE IF NOT EXISTS projekat_odp_db;
 USE projekat_odp_db;
 
 -- Kreiranje tabele za vesti, tagove i korisnike
-CREATE TABLE vesti IF NOT EXISTS (
+CREATE TABLE vesti  (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     autor_id INT NOT NULL,
     naslov VARCHAR(60) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE vesti IF NOT EXISTS (
     br_pregleda INT DEFAULT 0
 );
  
-CREATE TABLE tags IF NOT EXISTS (
+CREATE TABLE tags  (
 	id_vesti INT NOT NULL,
   naziv VARCHAR(20) NOT NULL
 );
@@ -25,7 +25,7 @@ CREATE TABLE tags IF NOT EXISTS (
 ALTER TABLE tags ADD UNIQUE `unique_index`(`id_vesti`, `naziv`);
 
 -- Tabela za korisnike --
-CREATE TABLE users IF NOT EXISTS (
+CREATE TABLE users  (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     uloga VARCHAR(20) DEFAULT false,
     ime VARCHAR(20) NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE users IF NOT EXISTS (
 
 -- Tabela za komentare
  --
-CREATE TABLE comments IF NOT EXISTS (
+CREATE TABLE comments  (
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     autor_id INT NOT NULL,
     vest_id INT NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE comments IF NOT EXISTS (
 -- Unos podataka u tabele - primeri
 -- Korisnici
 INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
-VALUES ('editro', "Nikola", "Ljajic", "ljajic@newsstud.com", "$2b$10$.omjoIy7s203S14EJ9z1IuEJ39vk9Fqk2Tr/g2UvpTgQHZPs43m1K");
+VALUES ('editor', "Nikola", "Ljaljic", "ljaljic@newsstud.com", "$2b$10$.omjoIy7s203S14EJ9z1IuEJ39vk9Fqk2Tr/g2UvpTgQHZPs43m1K");
 INSERT INTO users(uloga, ime, prezime, mejl, lozinka)
 VALUES ('user', "Nikola", "Mircic", "mircic@newsstud.com", "$2b$10$f0avo75kgBoxxirOaKz9SeaNxkbVCAZqTXQBfxW/BZf9Z4hW.cW6G");
 
@@ -109,4 +109,13 @@ VALUES ( 1, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
 VALUES ( 2, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 
-select * from users
+SELECT * FROM vesti;
+
+SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
+FROM vesti
+ORDER BY vreme DESC
+LIMIT 4 OFFSET 0;
+
+SHOW DATABASES;
+USE projekat_odp_db;
+SHOW TABLES;
