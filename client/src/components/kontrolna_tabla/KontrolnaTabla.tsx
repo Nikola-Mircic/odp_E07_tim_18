@@ -1,4 +1,4 @@
-import { PročitajVrednostPoKljuču, ObrišiVrednostPoKljuču } from "../../helpers/local_storage"
+import { PročitajVrednostPoKljuču, ObrišiVrednostPoKljuču } from "../../helpers/session_storage"
 
 type KontrolnaTablaProps = {
   onLogout: () => void

@@ -8,11 +8,11 @@ const app = express();
 const PORT = process.env.SERVER_PORT || 8080;
 
 // Osnovna ruta
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (req: any, res: any) => {
   res.send('Hello, World!');
 });
 
 // Pokretanje servera
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(8080, "192.168.1.6", () => {
+  console.log(`Server is running on http://192.168.1.6:${PORT}`);
 });
