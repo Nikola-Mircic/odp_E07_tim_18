@@ -47,7 +47,6 @@ export class VestService implements IVestService {
     var result: VestDTO[] = [];
 
     for(let vest of slicneVesti){
-      console.log(vest);
       let autor = await this.userSerivce.getUserById(vest.autorId);
 
       result.push(new VestDTO(

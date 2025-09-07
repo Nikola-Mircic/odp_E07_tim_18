@@ -61,7 +61,7 @@ export class VestiRepository implements IVestRepository {
 	async getById(id: number): Promise<Vest> {
 		try {
 			const query = `
-        SELECT id, autor_id naslov, tekst, slika, vreme, br_pregleda
+        SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
         FROM vesti 
         WHERE id = ?;
       `;
@@ -92,7 +92,7 @@ export class VestiRepository implements IVestRepository {
 			const query = `
         SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
         FROM vesti
-        ORDER BY br_pregleda, vreme DESC
+        ORDER BY br_pregleda DESC, vreme DESC
         LIMIT ? OFFSET ?;
       `;
 
