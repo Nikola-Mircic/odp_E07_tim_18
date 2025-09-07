@@ -1,18 +1,31 @@
 import express, { Request, Response } from "express";
-import dotenv from 'dotenv';
+import cors from "cors";
+import dotenv from "dotenv";
 
+import authRoutes from "./src/Routes/Auth";
+import userRoutes from "./src/Routes/User";
+import commentRoutes from "./src/Routes/Comments";
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.SERVER_PORT || 8080;
+const PORT = Number(process.env.SERVER_PORT) || 8080;
+const HOST = process.env.SERVER_HOST || "192.168.1.6";
 
-// Osnovna ruta
-app.get('/', (req: any, res: any) => {
-  res.send('Hello, World!');
-});
+app.use(
+  cors({
+    origin: ["http://localhost:5173", `http://${HOST}:5173`],
+    credentials: true,
+  })
+);
+app.use(express.json());
 
-// Pokretanje servera
-app.listen(8080, "192.168.1.6", () => {
-  console.log(`Server is running on http://192.168.1.6:${PORT}`);
+app.get("/", (_req: Request, res: Response) => res.send("OK"));
+
+app.use("/api", authRoutes);
+app.use("/api", userRoutes);
+app.use("/api", commentRoutes);
+
+app.listen(PORT, HOST, () => {
+  console.log(`Server is running on http://${HOST}:${PORT}`);
 });

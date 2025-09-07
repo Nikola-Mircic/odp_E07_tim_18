@@ -7,7 +7,6 @@ import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostP
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ⬇️ Dodali smo korisnickoIme?: string i exp?: number da pokrije payload iz tokena
 type ClaimsWithExp = JwtTokenClaims & {
   exp?: number;
   korisnickoIme?: string;
@@ -16,7 +15,6 @@ type ClaimsWithExp = JwtTokenClaims & {
 const decodeJWT = (token: string): ClaimsWithExp | null => {
   try {
     const decoded = jwtDecode<ClaimsWithExp>(token);
-    // dovoljni su id i uloga; korisnickoIme je opciono
     if (decoded.id && decoded.uloga) return decoded;
     return null;
   } catch {
@@ -90,3 +88,5 @@ export const useAuth = () => {
   if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
   return ctx;
 };
+
+export default AuthProvider; 

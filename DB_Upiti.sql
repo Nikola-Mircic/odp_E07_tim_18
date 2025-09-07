@@ -119,3 +119,7 @@ LIMIT 4 OFFSET 0;
 SHOW DATABASES;
 USE projekat_odp_db;
 SHOW TABLES;
+
+TRUNCATE users;
+
+

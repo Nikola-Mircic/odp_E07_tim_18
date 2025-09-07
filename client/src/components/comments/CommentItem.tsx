@@ -1,4 +1,3 @@
-// client/src/components/comments/CommentItem.tsx
 import React, { useState } from "react";
 import { commentsApi, type CommentDTO } from "../../api_services/comments/CommentApiService";
 import { useAuth } from "../../providers/AuthProvider";
@@ -11,10 +10,13 @@ type Props = {
 
 export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
   const { user, token } = useAuth();
-  const canModify =
-    !!user &&
-    !!token &&
-    (user.id === data.autor_id || user.uloga === "admin" || user.uloga === "editor");
+
+  // Normalizacija uloge + bezbedno poređenje autora
+  const roleLower = (user?.uloga ?? "").toLowerCase().trim();
+  const autorId = Number((data as any).autor_id);
+  const isOwner = !!user && user.id === autorId;
+  const isStaff = roleLower === "admin" || roleLower === "editor";
+  const canModify = !!token && (isOwner || isStaff);
 
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(data.tekst);
@@ -79,7 +81,13 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
               >
                 Sačuvaj
               </button>
-              <button className="px-3 py-1" onClick={() => { setEditing(false); setText(data.tekst); }}>
+              <button
+                className="px-3 py-1"
+                onClick={() => {
+                  setEditing(false);
+                  setText(data.tekst);
+                }}
+              >
                 Otkaži
               </button>
             </>
