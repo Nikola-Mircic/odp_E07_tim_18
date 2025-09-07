@@ -64,6 +64,15 @@ export default function LoginForma({ authApi, onSuccess }: AuthFormProps) {
 					Prijavi se
 				</button>
 			</form>
+
+      <div className="text-center">
+        <p className="mt-4 text-sm text-gray-600">
+          Nemate nalog? 
+          <a href="/register" className="text-blue-500 hover:underline ml-1">
+            Registrujte se
+          </a>
+        </p>
+      </div>
 		</div>
 	);
 }

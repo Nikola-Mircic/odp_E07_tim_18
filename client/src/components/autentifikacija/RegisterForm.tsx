@@ -147,6 +147,15 @@ export default function RegisterForm({ authApi, onSuccess }: AuthFormProps) {
 					Registruj se
 				</button>
 			</form>
+
+      <div className="text-center">
+        <p className="mt-4 text-sm text-gray-600">
+          Već imate nalog? 
+          <a href="/login" className="text-blue-500 hover:underline ml-1">
+            Prijavite se
+          </a>
+        </p>
+      </div>
 		</div>
 	);
 }
