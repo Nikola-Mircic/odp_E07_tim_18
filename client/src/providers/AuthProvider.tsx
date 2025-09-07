@@ -3,19 +3,18 @@ import type { AuthContextType } from "../types/auth/AuthContext";
 import type { JwtTokenClaims } from "../types/auth/JwtTokenClaims";
 import { jwtDecode } from "jwt-decode";
 import type { AuthUser } from "../types/auth/AuthUser";
-import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostPoKljuču } from "../helpers/local_storage";
+import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostPoKljuču } from "../helpers/session_storage";
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const decodeJWT = (token: string): JwtTokenClaims | null => {
 	try {
 		const decoded = jwtDecode<JwtTokenClaims>(token);
 
 		// Proveri da li token ima potrebna polja
-		if (decoded.id && decoded.korisnickoIme && decoded.uloga) {
+		if (decoded.id && decoded.uloga) {
 			return {
 				id: decoded.id,
-				korisnickoIme: decoded.korisnickoIme,
 				uloga: decoded.uloga,
 			};
 		}
@@ -74,6 +73,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = (newToken: string) => {
       const claims = decodeJWT(newToken);
       
+      console.log(claims);
+      
       if (claims && !isTokenExpired(newToken)) {
           setToken(newToken);
           setUser({
@@ -109,3 +110,5 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       </AuthContext.Provider>
   );
 }
+
+export default AuthContext;

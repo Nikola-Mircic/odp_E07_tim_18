@@ -41,7 +41,7 @@ export class AuthController {
 
       // Proveravamo da li je prijava uspešna
       if (result.length > 0) {
-        res.status( StatusCodes.OK ).json({success: true, message: 'Uspešna prijava', data: { token: result }});
+        res.status( StatusCodes.OK ).json({success: true, message: 'Uspešna prijava', data: result});
         return;
       } else {
         res.status( StatusCodes.UNAUTHORIZED ).json({success: false, message: 'Неисправно корисничко име или лозинка'});
@@ -72,7 +72,7 @@ export class AuthController {
 
       // Proveravamo da li je registracija uspešna
       if (result.length > 0) {
-        res.status(StatusCodes.OK).json({success: true, message: 'Uspešna registracija', data: { token: result }});
+        res.status(StatusCodes.OK).json({success: true, message: 'Uspešna registracija', data: result});
       } else {
         res.status(StatusCodes.BAD_REQUEST).json({success: false, message: 'Регистрација није успела. Корисничко име већ постоји.', });
       }

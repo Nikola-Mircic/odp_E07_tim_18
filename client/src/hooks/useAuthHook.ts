@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import type { AuthContextType } from "../types/auth/AuthContext";
-import { AuthContext } from "../providers/AuthProvider";
+import AuthContext from "../providers/AuthProvider";
 
 
 // Hook za korišćenje AuthContext-a

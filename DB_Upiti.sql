@@ -108,3 +108,5 @@ INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
 VALUES ( 1, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
 INSERT INTO comments ( autor_id, vest_id, tekst, vreme )
 VALUES ( 2, 4, "Lorem ipsum dolor sit amet, consectetur adipiscing elit.", "2025-07-05 12:37:12");
+
+select * from users

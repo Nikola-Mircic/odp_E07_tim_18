@@ -1,7 +1,13 @@
 import app from './app';
 
-const port = process.env.PORT || 8080;
+const PORT = process.env.SERVER_PORT || 8080;
 
-app.listen(port, () => {
-  console.log(`Listening: http://localhost:${port}`);
+// Osnovna ruta
+app.get("/", (req: any, res: any) => {
+	res.send("Ovde nema nista, idi na /api/v1....");
+});
+
+// Pokretanje servera
+app.listen(PORT, () => {
+	console.log(`Server is running on http://localhost:${PORT}`);
 });
