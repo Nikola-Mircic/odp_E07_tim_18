@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, type ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { AuthContextType } from "../types/auth/AuthContext";
 import type { JwtTokenClaims } from "../types/auth/JwtTokenClaims";
 import { jwtDecode } from "jwt-decode";
@@ -26,16 +26,14 @@ const decodeJWT = (token: string): JwtTokenClaims | null => {
 	}
 };
 
-// Helper funkcija za proveru da li je token istekao
 const isTokenExpired = (token: string): boolean => {
-	try {
-		const decoded = jwtDecode(token);
-		const currentTime = Date.now() / 1000;
-
-		return decoded.exp ? decoded.exp < currentTime : false;
-	} catch {
-		return true;
-	}
+  try {
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    return decoded.exp ? decoded.exp < currentTime : false;
+  } catch {
+    return true;
+  }
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -43,31 +41,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Učitaj token iz localStorage pri pokretanju
   useEffect(() => {
-      const savedToken = PročitajVrednostPoKljuču("authToken");
-      
-      if (savedToken) {
-          // Proveri da li je token istekao
-          if (isTokenExpired(savedToken)) {
-              ObrišiVrednostPoKljuču("authToken");
-              setIsLoading(false);
-              return;
-          }
-          
-          const claims = decodeJWT(savedToken);
-          if (claims) {
-              setToken(savedToken);
-              setUser({
-                  id: claims.id,
-                  uloga: claims.uloga
-              });
-          } else {
-              ObrišiVrednostPoKljuču("authToken");
-          }
+    const savedToken = PročitajVrednostPoKljuču("authToken");
+    if (savedToken) {
+      if (isTokenExpired(savedToken)) {
+        ObrišiVrednostPoKljuču("authToken");
+        setIsLoading(false);
+        return;
       }
-      
-      setIsLoading(false);
+      const claims = decodeJWT(savedToken);
+      if (claims) {
+        setToken(savedToken);
+        setUser({ id: claims.id, uloga: claims.uloga });
+      } else {
+        ObrišiVrednostPoKljuču("authToken");
+      }
+    }
+    setIsLoading(false);
   }, []);
 
   const login = (newToken: string) => {
@@ -88,21 +78,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
-      setToken(null);
-      setUser(null);
-      ObrišiVrednostPoKljuču("authToken");
+    setToken(null);
+    setUser(null);
+    ObrišiVrednostPoKljuču("authToken");
   };
 
   const isAuthenticated = !!user && !!token;
 
-  const value: AuthContextType = {
-      user,
-      token,
-      login,
-      logout,
-      isAuthenticated,
-      isLoading
-  };
+  const value: AuthContextType = useMemo(
+    () => ({ user, token, login, logout, isAuthenticated, isLoading }),
+    [user, token, isAuthenticated, isLoading]
+  );
 
   return (
       <AuthContext.Provider value={value}>

@@ -1,20 +1,44 @@
-import { Link } from "react-router-dom";
+// src/components/Navbar.tsx
+import { NavLink, Link } from "react-router-dom";
 
-const Navbar = () => {
+export default function Navbar() {
   return (
-    <nav className="bg-white shadow sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="text-xl font-bold text-gray-800">
+    <header className="bg-white border-b">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <Link to="/" className="text-xl font-semibold">
           MyNews
         </Link>
-        <div className="flex gap-6">
-          <Link to="/" className="text-gray-600 hover:text-black">Početna</Link>
-          <Link to="/login" className="text-gray-600 hover:text-black">Login</Link>
-          <Link to="/profile" className="text-gray-600 hover:text-black">Profil</Link>
-        </div>
-      </div>
-    </nav>
-  );
-};
 
-export default Navbar;
+        <nav className="flex items-center gap-6">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `hover:underline ${isActive ? "font-semibold" : ""}`
+            }
+            end
+          >
+            Početna
+          </NavLink>
+
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              `hover:underline ${isActive ? "font-semibold" : ""}`
+            }
+          >
+            Login
+          </NavLink>
+
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `hover:underline ${isActive ? "font-semibold" : ""}`
+            }
+          >
+            Profil
+          </NavLink>
+        </nav>
+      </div>
+    </header>
+  );
+}
