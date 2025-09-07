@@ -28,7 +28,7 @@ const decodeJWT = (token: string): JwtTokenClaims | null => {
 
 const isTokenExpired = (token: string): boolean => {
   try {
-    const decoded = jwtDecode<ClaimsWithExp>(token);
+    const decoded = jwtDecode(token);
     const currentTime = Date.now() / 1000;
     return decoded.exp ? decoded.exp < currentTime : false;
   } catch {
