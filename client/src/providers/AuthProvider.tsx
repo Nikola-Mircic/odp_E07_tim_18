@@ -5,30 +5,28 @@ import { jwtDecode } from "jwt-decode";
 import type { AuthUser } from "../types/auth/AuthUser";
 import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostPoKljuču } from "../helpers/session_storage";
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const decodeJWT = (token: string): JwtTokenClaims | null => {
-	try {
-		const decoded = jwtDecode<JwtTokenClaims>(token);
+// ⬇️ Dodali smo korisnickoIme?: string i exp?: number da pokrije payload iz tokena
+type ClaimsWithExp = JwtTokenClaims & {
+  exp?: number;
+  korisnickoIme?: string;
+};
 
-		// Proveri da li token ima potrebna polja
-		if (decoded.id && decoded.uloga) {
-			return {
-				id: decoded.id,
-				uloga: decoded.uloga,
-			};
-		}
-
-		return null;
-	} catch (error) {
-		console.error("Greška pri dekodiranju JWT tokena:", error);
-		return null;
-	}
+const decodeJWT = (token: string): ClaimsWithExp | null => {
+  try {
+    const decoded = jwtDecode<ClaimsWithExp>(token);
+    // dovoljni su id i uloga; korisnickoIme je opciono
+    if (decoded.id && decoded.uloga) return decoded;
+    return null;
+  } catch {
+    return null;
+  }
 };
 
 const isTokenExpired = (token: string): boolean => {
   try {
-    const decoded = jwtDecode(token);
+    const decoded = jwtDecode<ClaimsWithExp>(token);
     const currentTime = Date.now() / 1000;
     return decoded.exp ? decoded.exp < currentTime : false;
   } catch {
@@ -47,34 +45,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (isTokenExpired(savedToken)) {
         ObrišiVrednostPoKljuču("authToken");
         setIsLoading(false);
-        return;
-      }
-      const claims = decodeJWT(savedToken);
-      if (claims) {
-        setToken(savedToken);
-        setUser({ id: claims.id, uloga: claims.uloga });
       } else {
-        ObrišiVrednostPoKljuču("authToken");
+        const claims = decodeJWT(savedToken);
+        if (claims) {
+          setToken(savedToken);
+          setUser({ id: claims.id, uloga: claims.uloga });
+        } else {
+          ObrišiVrednostPoKljuču("authToken");
+        }
+        setIsLoading(false);
       }
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = (newToken: string) => {
-      const claims = decodeJWT(newToken);
-      
-      console.log(claims);
-      
-      if (claims && !isTokenExpired(newToken)) {
-          setToken(newToken);
-          setUser({
-              id: claims.id,
-              uloga: claims.uloga
-          });
-          SačuvajVrednostPoKljuču("authToken", newToken);
-      } else {
-          console.error('Nevažeći ili istekao token');
-      }
+    const claims = decodeJWT(newToken);
+    if (claims && !isTokenExpired(newToken)) {
+      setToken(newToken);
+      setUser({ id: claims.id, uloga: claims.uloga });
+      SačuvajVrednostPoKljuču("authToken", newToken);
+    }
   };
 
   const logout = () => {
@@ -90,11 +82,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     [user, token, isAuthenticated, isLoading]
   );
 
-  return (
-      <AuthContext.Provider value={value}>
-          {children}
-      </AuthContext.Provider>
-  );
-}
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
 
-export default AuthContext;
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
+  return ctx;
+};

@@ -1,82 +1,55 @@
-import axios from "axios";
-import type { CommentDto } from "../../models/comments/CommentDto";
-import type { AddCommentType } from "../../types/comments/AddCommentType";
-import type { ApiResponse } from "../../types/common/ApiResponse";
-import type { ICommentApIService } from "./ICommentsApiService";
+// client/src/api_services/comments/CommentAPIService.ts
+export type CommentDTO = {
+  id: number;
+  autor_id: number;
+  autor: string;
+  tekst: string;
+  vreme: string;
+};
 
-const COMMENTS_API_URL: string = import.meta.env.VITE_API_URL + "comments";
+const BASE =
+  (import.meta as any).env?.VITE_API_BASE ?? "http://localhost:8080/api";
+// Po želji u .env (u client/): VITE_API_BASE=http://192.168.1.6:8080/api
 
-export const commentApi: ICommentApIService = {
-	getCommentsForVest: async function (
-		vestId: number
-	): Promise<ApiResponse<CommentDto[]>> {
-		try {
-			const res = await axios.get<ApiResponse<CommentDto[]>>(
-				`${COMMENTS_API_URL}/for/${vestId}`,
-			);
+export const commentsApi = {
+  async listByVest(vestId: number): Promise<CommentDTO[]> {
+    const r = await fetch(`${BASE}/vesti/${vestId}/komentari`);
+    if (!r.ok) throw new Error("Greška pri čitanju komentara");
+    return r.json();
+  },
 
-			return res.data;
-		} catch (error) {
-			let message = "Greška prilikom ucitavanja komentara!";
-			if (axios.isAxiosError(error)) {
-				message = error.response?.data?.message || message;
-			}
-			return {
-				success: false,
-				message,
-				data: undefined,
-			};
-		}
-	},
+  async create(vestId: number, tekst: string, token: string) {
+    const r = await fetch(`${BASE}/komentari`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ vestId, tekst }),
+    });
+    if (!r.ok) throw new Error("Greška pri dodavanju komentara");
+    return r.json();
+  },
 
-	getCommentById: async function (
-		id: number
-	): Promise<ApiResponse<CommentDto>> {
-		try {
-			const res = await axios.get<ApiResponse<CommentDto>>(
-				`${COMMENTS_API_URL}/id/${id}`,
-			);
+  async update(id: number, tekst: string, token: string) {
+    const r = await fetch(`${BASE}/komentari/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ tekst }),
+    });
+    if (!r.ok) throw new Error("Greška pri izmeni komentara");
+    return r.json();
+  },
 
-			return res.data;
-		} catch (error) {
-			let message = "Greška prilikom ucitavanja komentara!";
-			if (axios.isAxiosError(error)) {
-				message = error.response?.data?.message || message;
-			}
-			return {
-				success: false,
-				message,
-				data: undefined,
-			};
-		}
-	},
-
-	createComment: async function (
-		token: string,
-		comment: AddCommentType
-	): Promise<ApiResponse<CommentDto>> {
-		try {
-			const res = await axios.post<ApiResponse<CommentDto>>(
-				`${COMMENTS_API_URL}/comments/`,
-				{
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-					data: comment,
-				}
-			);
-
-			return res.data;
-		} catch (error) {
-			let message = "Greška prilikom ucitavanja komentara!";
-			if (axios.isAxiosError(error)) {
-				message = error.response?.data?.message || message;
-			}
-			return {
-				success: false,
-				message,
-				data: undefined,
-			};
-		}
-	},
+  async remove(id: number, token: string) {
+    const r = await fetch(`${BASE}/komentari/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!r.ok) throw new Error("Greška pri brisanju komentara");
+    return r.json();
+  },
 };
