@@ -4,8 +4,8 @@ import type { AuthFormProps } from "../../types/props/auth_form_props/AuthFormPr
 import { validacijaPodatakaAuth } from "../../api_services/validators/auth/AuthValidator";
 import { useAuth } from "../../hooks/useAuthHook";
 
-export default function LoginForma({ authApi, onLoginSuccess }: AuthFormProps) {
-  const auth = useAuth();
+export default function LoginForma({ authApi, onSuccess }: AuthFormProps) {
+	const auth = useAuth();
 	const [email, setEmail] = useState("");
 	const [lozinka, setLozinka] = useState("");
 	const [greska, setGreska] = useState("");
@@ -21,15 +21,15 @@ export default function LoginForma({ authApi, onLoginSuccess }: AuthFormProps) {
 
 		const odgovor = await authApi.prijava(email, lozinka);
 
-    if (odgovor.success && odgovor.data) {
-      const token = odgovor.data;
-      console.log(token);
-      auth.login(token);
-      onLoginSuccess();
-    } else {
-      setGreska(odgovor.message);
-      setLozinka("");
-    }
+		if (odgovor.success && odgovor.data) {
+			const token = odgovor.data;
+			console.log(token);
+			auth.login(token);
+			onSuccess();
+		} else {
+			setGreska(odgovor.message);
+			setLozinka("");
+		}
 	};
 
 	return (

@@ -11,8 +11,6 @@ const decodeJWT = (token: string): JwtTokenClaims | null => {
 	try {
 		const decoded = jwtDecode<JwtTokenClaims>(token);
 
-    console.log(decoded);
-
 		// Proveri da li token ima potrebna polja
 		if (decoded.id && decoded.uloga) {
 			return {

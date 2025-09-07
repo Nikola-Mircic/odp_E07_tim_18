@@ -9,7 +9,7 @@ const Navbar = () => {
         </Link>
         <div className="flex gap-6">
           <Link to="/" className="text-gray-600 hover:text-black">Početna</Link>
-          <Link to="/login" className="text-gray-600 hover:text-black">Login</Link>
+          <Link to="/register" className="text-gray-600 hover:text-black">Login</Link>
           <Link to="/profile" className="text-gray-600 hover:text-black">Profil</Link>
         </div>
       </div>
