@@ -1,7 +1,7 @@
 // client/src/components/comments/CommentItem.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import { commentsApi, type CommentDTO } from "../../api_services/comments/CommentApiService";
-import { useAuth } from "../../providers/AuthProvider";
+import { useAuth } from "../../hooks/useAuthHook";
 
 type Props = {
   data: CommentDTO;

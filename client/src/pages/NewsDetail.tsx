@@ -6,8 +6,6 @@ import AddComment from "../components/AddComment";
 import type { VestDto } from "../models/vesti/VestDto";
 import { vestiApi } from "../api_services/vesti/VestAPIService";
 import CommentsBox from "../components/comments/CommentsBox";
-const { id } = useParams<{ id: string }>();
-
 
 interface CommentType {
   username: string;

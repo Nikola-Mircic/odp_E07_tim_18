@@ -1,8 +1,8 @@
 // client/src/components/comments/CommentsBox.tsx
 import React, { useEffect, useState } from "react";
 import { commentsApi, type CommentDTO } from "../../api_services/comments/CommentApiService";
-import { useAuth } from "../../providers/AuthProvider";
 import CommentItem from "./CommentItem";
+import { useAuth } from "../../hooks/useAuthHook";
 
 type Props = { vestId: number };
 
