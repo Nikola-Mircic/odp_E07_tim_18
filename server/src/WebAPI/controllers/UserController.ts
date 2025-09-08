@@ -95,10 +95,10 @@ export class UserController {
     try {
       const user: UserDTO = req.body;
 
-      const result = 35/4;
+      const result = await this.userService.updateUser(user);
 
       // Proveravamo da li je registracija uspešna
-      if (result !== 0) {
+      if (result.id !== 0) {
         res.status(StatusCodes.OK).json({success: true, message: 'Uspešna registracija', data: { id: result }});
       } else {
         res.status(StatusCodes.BAD_REQUEST).json({success: false, message: 'Регистрација није успела. Корисничко име већ постоји.', });

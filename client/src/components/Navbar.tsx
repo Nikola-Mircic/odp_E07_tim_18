@@ -34,16 +34,22 @@ export default function Navbar() {
 							Login
 						</NavLink>
 					) : (
-						<>
-							<span className="font-medium">{user?.username}</span>
-              <button
-                className="rounded-md w-min h-min p-0 m-0">
-                <IoIosLogOut
-                  className="m-0 p-0 text-white bg-blue-600 rounded-md hover:bg-blue-700 w-8 h-8"
-                  onClick={logout}
-                />
-              </button>
-						</>
+            <>
+              <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                  `hover:underline  ${isActive ? "font-semibold" : ""}`
+                }
+                >
+                {user?.username}
+              </NavLink>
+              <button className="rounded-md w-min h-min p-0 m-0">
+								<IoIosLogOut
+									className="m-0 p-0 text-white bg-blue-600 rounded-md hover:bg-blue-700 w-8 h-8"
+									onClick={logout}
+								/>
+							</button>
+            </>
 					)}
 				</nav>
 			</div>

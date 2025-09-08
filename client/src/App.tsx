@@ -10,30 +10,37 @@ import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/kontrolna_tabla/ProtectedRoute";
 import { vestiApi } from "./api_services/vesti/VestAPIService";
 import commentApi from "./api_services/comments/CommentApiService";
+import ProfileEditPage from "./pages/ProfileEditPage";
 
 const App: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar />
-      <main className="flex-grow container mx-auto px-4 py-6">
-        <Routes>
-          <Route path="/" element={<NewsFeed vestiApi={vestiApi}/>} />
-          <Route path="/news/:id" element={<NewsDetail commentsApi={commentApi} vestiApi={vestiApi} />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          {/* Sve rute unutar ovog wrapper-a su zaštićene */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/profile" element={<Profile />} />
-          </Route>
+		<div className="flex flex-col min-h-screen bg-gray-50">
+			<Navbar />
+			<main className="flex-grow container mx-auto px-4 py-6">
+				<Routes>
+					<Route path="/" element={<NewsFeed vestiApi={vestiApi} />} />
+					<Route
+						path="/news/:id"
+						element={
+							<NewsDetail commentsApi={commentApi} vestiApi={vestiApi} />
+						}
+					/>
+					<Route path="/login" element={<LoginPage />} />
+					<Route path="/register" element={<RegisterPage />} />
+					{/* Sve rute unutar ovog wrapper-a su zaštićene */}
+					<Route element={<ProtectedRoute />}>
+						<Route path="/profile" element={<Profile />} />
+						<Route path="/profile/edit" element={<ProfileEditPage />} />{" "}
+						{/* ✅ nova ruta */}
+					</Route>
 
-          <Route path="*" element={<p>404 Stranica nije pronađena</p>} />
-        </Routes>
-      </main>
+					<Route path="*" element={<p>404 Stranica nije pronađena</p>} />
+				</Routes>
+			</main>
 
-
-      <Footer />
-    </div>
-  );
+			<Footer />
+		</div>
+	);
 };
 
 export default App;
