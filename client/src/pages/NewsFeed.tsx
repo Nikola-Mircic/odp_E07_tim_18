@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { IVestApiService } from "../api_services/vesti/IVestAPIService";
 import NewsCard from "../components/NewsCard";
 import type { VestDto } from "../models/vesti/VestDto";
+import NewsSearchBar from "../components/news/NewsSearcBar";
+import type { FilterFunctionType } from "../types/search/FilterFunctionType";
 
 interface NewsFeedProps {
   vestiApi: IVestApiService;
@@ -9,6 +11,7 @@ interface NewsFeedProps {
 
 const NewsFeed = ({ vestiApi }: NewsFeedProps) => {
   const [news, setNews] = useState<VestDto[]>([]);
+  const [filteredNews, setFilteredNews] = useState<VestDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -17,7 +20,10 @@ const NewsFeed = ({ vestiApi }: NewsFeedProps) => {
     setError(null);
     vestiApi
       .getVesti()
-      .then((res) => setNews(res.data || []))
+      .then((res) => {
+        setNews(res.data || [])
+        setFilteredNews(res.data || []);
+      })
       .catch((err) => setError(err))
       .finally(() => setLoading(false));
   }, []);
@@ -44,24 +50,25 @@ const NewsFeed = ({ vestiApi }: NewsFeedProps) => {
     );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-8 text-gray-800">
-        Najpopularnije vesti
-      </h1>
+		<div className="container mx-auto px-4 py-8">
+			<NewsSearchBar
+				onSearch={(filter) => {
+					setFilteredNews(filter(news));
+				}}
+			/>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {news.map((n) => (
-          <NewsCard
-            key={n.id}
-            id={n.id}
-            title={n.naslov}
-            views={n.brPregleda}
-          />
-        ))}
-      </div>
-
-    </div>
-  );
+			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+				{filteredNews.map((n) => (
+					<NewsCard
+						key={n.id}
+						id={n.id}
+						title={n.naslov}
+						views={n.brPregleda}
+					/>
+				))}
+			</div>
+		</div>
+	);
 };
 
 export default NewsFeed;

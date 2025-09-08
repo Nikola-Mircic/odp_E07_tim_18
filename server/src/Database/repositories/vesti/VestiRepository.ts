@@ -94,7 +94,8 @@ export class VestiRepository implements IVestRepository {
     try {
       const query = `
         SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
-        FROM vesti;
+        FROM vesti
+        ORDER BY vreme DESC;
       `;
 
       const [rows] = await db.execute<RowDataPacket[]>(query);
