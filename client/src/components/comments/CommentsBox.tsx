@@ -3,7 +3,7 @@ import { commentsApi, type CommentDto } from "../../api_services/comments/Commen
 
 type Props = {
   vestId: number;
-  refreshKey?: number; // promeni se nakon uspešnog unosa, pa refetch
+  refreshKey?: number;
 };
 
 export default function CommentsBox({ vestId, refreshKey = 0 }: Props) {

@@ -7,6 +7,11 @@ import type { VestDto } from "../models/vesti/VestDto";
 import { vestiApi } from "../api_services/vesti/VestAPIService";
 import { commentsApi } from "../api_services/comments/CommentApiService";
 
+interface CommentType {
+  username: string;
+  content: string;
+}
+
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [news, setNews] = useState<VestDto | null>(null);

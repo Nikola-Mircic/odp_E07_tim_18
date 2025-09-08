@@ -45,9 +45,7 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
     }
     setLoading(true);
     try {
-      // ✅ servis prima: (id, { content })
       await commentsApi.update(Number((data as any).id), { content: trimmed });
-      // Ažuriraj lokalno oba mogućа polja teksta (tekst/content), da UI ostane konzistentan
       onUpdated({ ...(data as any), tekst: trimmed, content: trimmed } as CommentDto);
       setEditing(false);
     } finally {
