@@ -120,6 +120,6 @@ SHOW DATABASES;
 USE projekat_odp_db;
 SHOW TABLES;
 
-TRUNCATE users;
+
 
 

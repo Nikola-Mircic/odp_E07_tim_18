@@ -1,73 +1,52 @@
-// client/src/components/comments/CommentsBox.tsx
-import React, { useEffect, useState } from "react";
-import { commentsApi, type CommentDTO } from "../../api_services/comments/CommentApiService";
-import { useAuth } from "../../providers/AuthProvider";
-import CommentItem from "./CommentItem";
+import { useEffect, useState } from "react";
+import { commentsApi, type CommentDto } from "../../api_services/comments/CommentApiService";
 
-type Props = { vestId: number };
+type Props = {
+  vestId: number;
+  refreshKey?: number; // promeni se nakon uspešnog unosa, pa refetch
+};
 
-export default function CommentsBox({ vestId }: Props) {
-  const { token } = useAuth();
-  const [comments, setComments] = useState<CommentDTO[]>([]);
-  const [newText, setNewText] = useState("");
+export default function CommentsBox({ vestId, refreshKey = 0 }: Props) {
+  const [comments, setComments] = useState<CommentDto[]>([]);
   const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-  const load = async () => {
-    const list = await commentsApi.listByVest(vestId);
-    setComments(list);
-  };
-
-  useEffect(() => {
-    load().catch(console.error);
-  }, [vestId]);
-
-  const add = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token || !newText.trim()) return;
+  async function fetchComments() {
     setLoading(true);
+    setErr(null);
     try {
-      await commentsApi.create(vestId, newText.trim(), token);
-      setNewText("");
-      await load();
+      const data = await commentsApi.getByVestId(vestId);
+      setComments(Array.isArray(data) ? data : []);
+    } catch (e: any) {
+      setErr(e?.message ?? "Greška pri učitavanju komentara");
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    if (!vestId) return;
+    fetchComments().catch(console.error);
+  }, [vestId, refreshKey]);
+
+  if (loading && comments.length === 0) {
+    return <p className="text-gray-500 mb-3">Učitavanje komentara…</p>;
+  }
+  if (err && comments.length === 0) {
+    return <p className="text-red-600 mb-3">{err}</p>;
+  }
+  if (comments.length === 0) {
+    return <p className="text-gray-500 mb-3">Još nema komentara.</p>;
+  }
 
   return (
-    <section className="mt-8">
-      <h2 className="text-xl font-semibold mb-3">Komentari</h2>
-
-      <div className="space-y-3">
-        {comments.map((c) => (
-          <CommentItem
-            key={c.id}
-            data={c}
-            onUpdated={(nc) =>
-              setComments((prev) => prev.map((x) => (x.id === nc.id ? nc : x)))
-            }
-            onDeleted={(cid) => setComments((prev) => prev.filter((x) => x.id !== cid))}
-          />
-        ))}
-        {comments.length === 0 && <div className="text-sm text-gray-500">Još nema komentara.</div>}
-      </div>
-
-      <form onSubmit={add} className="mt-5 grid gap-2">
-        <textarea
-          className="w-full border rounded p-2"
-          rows={3}
-          placeholder={token ? "Dodaj komentar…" : "Prijavi se da bi dodao komentar."}
-          value={newText}
-          onChange={(e) => setNewText(e.target.value)}
-          disabled={!token}
-        />
-        <button
-          className="bg-black text-white px-4 py-2 rounded w-fit disabled:opacity-60"
-          disabled={!token || !newText.trim() || loading}
-        >
-          Objavi
-        </button>
-      </form>
-    </section>
+    <ul className="space-y-3 mb-4">
+      {comments.map((c) => (
+        <li key={c.id} className="border rounded p-3">
+          <div className="text-sm text-gray-600 mb-1">@{c.username}</div>
+          <div>{c.content}</div>
+        </li>
+      ))}
+    </ul>
   );
 }

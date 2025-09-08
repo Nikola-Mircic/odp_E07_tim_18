@@ -1,55 +1,84 @@
-// client/src/api_services/comments/CommentAPIService.ts
-export type CommentDTO = {
+import axios, { type RawAxiosRequestHeaders } from "axios";
+import { PročitajVrednostPoKljuču } from "../../helpers/session_storage";
+
+export type CommentDto = {
   id: number;
-  autor_id: number;
-  autor: string;
-  tekst: string;
-  vreme: string;
+  // oba seta polja su opcionalna da bi TS bio srećan bez obzira šta vrati backend
+  username?: string; // modernije ime
+  autor?: string;    // alternativno ime
+  content?: string;  // modernije ime
+  tekst?: string;    // alternativno ime
+  createdAt?: string;
+
+  vestId?: number;   // modernije ime
+  vest_id?: number;  // alternativno ime
+  autor_id?: number; // opcionalno ako backend vraća ID autora
 };
 
-const BASE =
-  (import.meta as any).env?.VITE_API_BASE ?? "http://localhost:8080/api";
-// Po želji u .env (u client/): VITE_API_BASE=http://192.168.1.6:8080/api
+const API_BASE =
+  (import.meta as any).env?.VITE_API_BASE_URL !== undefined
+    ? (import.meta as any).env.VITE_API_BASE_URL
+    : "";
+
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
+});
+
+function buildHeaders(isJson = true): RawAxiosRequestHeaders {
+  const headers: RawAxiosRequestHeaders = {};
+  if (isJson) headers["Content-Type"] = "application/json";
+  const token = PročitajVrednostPoKljuču("authToken");
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  return headers;
+}
 
 export const commentsApi = {
-  async listByVest(vestId: number): Promise<CommentDTO[]> {
-    const r = await fetch(`${BASE}/vesti/${vestId}/komentari`);
-    if (!r.ok) throw new Error("Greška pri čitanju komentara");
-    return r.json();
+  // GET /comments?vestId=... ili ?vest_id=...
+  getByVestId(vestId: number) {
+    return api.get<CommentDto[]>("/comments", {
+      params: { vestId, vest_id: vestId }, // pošalji oba – backend će uzeti jedan
+      headers: buildHeaders(false),
+    });
   },
 
-  async create(vestId: number, tekst: string, token: string) {
-    const r = await fetch(`${BASE}/komentari`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ vestId, tekst }),
+  // POST /comments
+  // UI šalje { vestId, username, content } — ovde mapiramo na oba naziva
+  create(payload: { vestId: number; username: string; content: string }) {
+    const body = {
+      // oba naziva za svaki field (kompatibilnost sa backendom)
+      vestId: payload.vestId,
+      vest_id: payload.vestId,
+
+      username: payload.username,
+      autor: payload.username,
+
+      content: payload.content,
+      tekst: payload.content,
+    };
+
+    return api.post<CommentDto>("/comments", body, {
+      headers: buildHeaders(true),
     });
-    if (!r.ok) throw new Error("Greška pri dodavanju komentara");
-    return r.json();
   },
 
-  async update(id: number, tekst: string, token: string) {
-    const r = await fetch(`${BASE}/komentari/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ tekst }),
+  // PUT /comments/:id
+  // UI šalje { content } — mapiramo i na { tekst }
+  update(id: number, payload: { content: string }) {
+    const body = {
+      content: payload.content,
+      tekst: payload.content,
+    };
+
+    return api.put<CommentDto>(`/comments/${id}`, body, {
+      headers: buildHeaders(true),
     });
-    if (!r.ok) throw new Error("Greška pri izmeni komentara");
-    return r.json();
   },
 
-  async remove(id: number, token: string) {
-    const r = await fetch(`${BASE}/komentari/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+  // DELETE /comments/:id
+  remove(id: number) {
+    return api.delete<void>(`/comments/${id}`, {
+      headers: buildHeaders(false),
     });
-    if (!r.ok) throw new Error("Greška pri brisanju komentara");
-    return r.json();
   },
 };

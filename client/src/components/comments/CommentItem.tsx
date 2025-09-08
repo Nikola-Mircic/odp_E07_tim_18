@@ -1,33 +1,54 @@
 import React, { useState } from "react";
-import { commentsApi, type CommentDTO } from "../../api_services/comments/CommentApiService";
+import type { CommentDto } from "../../api_services/comments/CommentApiService";
+import { commentsApi } from "../../api_services/comments/CommentApiService";
 import { useAuth } from "../../providers/AuthProvider";
 
 type Props = {
-  data: CommentDTO;
-  onUpdated: (c: CommentDTO) => void;
+  data: CommentDto;
+  onUpdated: (c: CommentDto) => void;
   onDeleted: (id: number) => void;
 };
 
 export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
   const { user, token } = useAuth();
 
-  // Normalizacija uloge + bezbedno poređenje autora
+  const autor =
+    (data as any).autor ??
+    (data as any).username ??
+    "Anon";
+  const autorId = Number(
+    (data as any).autor_id ??
+      (data as any).authorId ??
+      (data as any).user_id ??
+      NaN
+  );
+  const initialText = String(
+    (data as any).tekst ?? (data as any).content ?? ""
+  );
+
   const roleLower = (user?.uloga ?? "").toLowerCase().trim();
-  const autorId = Number((data as any).autor_id);
-  const isOwner = !!user && user.id === autorId;
+  const isOwner = !!user && !Number.isNaN(autorId) && user.id === autorId;
   const isStaff = roleLower === "admin" || roleLower === "editor";
   const canModify = !!token && (isOwner || isStaff);
 
   const [editing, setEditing] = useState(false);
-  const [text, setText] = useState(data.tekst);
+  const [text, setText] = useState(initialText);
   const [loading, setLoading] = useState(false);
 
   const save = async () => {
     if (!token) return;
+    const trimmed = text.trim();
+    if (!trimmed || trimmed === initialText) {
+      setEditing(false);
+      setText(initialText);
+      return;
+    }
     setLoading(true);
     try {
-      await commentsApi.update(data.id, text.trim(), token);
-      onUpdated({ ...data, tekst: text.trim() });
+      // ✅ servis prima: (id, { content })
+      await commentsApi.update(Number((data as any).id), { content: trimmed });
+      // Ažuriraj lokalno oba mogućа polja teksta (tekst/content), da UI ostane konzistentan
+      onUpdated({ ...(data as any), tekst: trimmed, content: trimmed } as CommentDto);
       setEditing(false);
     } finally {
       setLoading(false);
@@ -39,8 +60,8 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
     if (!window.confirm("Obrisati komentar?")) return;
     setLoading(true);
     try {
-      await commentsApi.remove(data.id, token);
-      onDeleted(data.id);
+      await commentsApi.remove(Number((data as any).id));
+      onDeleted(Number((data as any).id));
     } finally {
       setLoading(false);
     }
@@ -48,10 +69,10 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
 
   return (
     <div className="py-3 border-b">
-      <div className="text-sm text-gray-600">{data.autor}</div>
+      <div className="text-sm text-gray-600">{autor}</div>
 
       {!editing ? (
-        <p className="whitespace-pre-wrap mt-1">{data.tekst}</p>
+        <p className="whitespace-pre-wrap mt-1">{text}</p>
       ) : (
         <textarea
           className="w-full border rounded p-2 mt-1"
@@ -85,7 +106,7 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
                 className="px-3 py-1"
                 onClick={() => {
                   setEditing(false);
-                  setText(data.tekst);
+                  setText(initialText);
                 }}
               >
                 Otkaži

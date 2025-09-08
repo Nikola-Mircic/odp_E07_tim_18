@@ -1,48 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import NewsCard from "../components/NewsCard";
-import Comment from "../components/Comment";
 import AddComment from "../components/AddComment";
+import CommentsBox from "../components/comments/CommentsBox";
 import type { VestDto } from "../models/vesti/VestDto";
 import { vestiApi } from "../api_services/vesti/VestAPIService";
-import CommentsBox from "../components/comments/CommentsBox";
-const { id } = useParams<{ id: string }>();
-
-
-interface CommentType {
-  username: string;
-  content: string;
-}
+import { commentsApi } from "../api_services/comments/CommentApiService";
 
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [news, setNews] = useState<VestDto | null>(null);
   const [relatedNews, setRelatedNews] = useState<VestDto[]>([]);
-  const [comments, setComments] = useState<CommentType[]>([
-    { username: "Ana", content: "Odlična vest!" },
-    { username: "Marko", content: "Hvala za info." },
-  ]);
+  const [reloadComments, setReloadComments] = useState(0);
 
   useEffect(() => {
+    if (!id) return;
     (async () => {
-			if (id) {
-				// OVO JE SAMO PRIMER!
-				var found = await vestiApi
-					.getById(parseInt(id))
-					.then((res) => res.data);
+      // (opciono) ako imaš endpoint za preglede, pozovi ga ovde:
+      // try { await vestiApi.incrementPregled(Number(id)); } catch {}
 
-				if (!found) setNews(null);
-				else setNews(found);
+      const found = await vestiApi.getById(Number(id)).then((res) => res.data);
+      setNews(found ?? null);
 
-				// Povezane vesti - jednostavno po prvih 3 koje nisu trenutna
-				var slicne = await vestiApi
-					.getSlicneVesti(Number(id))
-					.then((res) => res.data);
-				if (!slicne) setRelatedNews([]);
-				else setRelatedNews(slicne);
-			}
-		})();
+      const slicne = await vestiApi.getSlicneVesti(Number(id)).then((res) => res.data);
+      setRelatedNews(slicne ?? []);
+    })();
   }, [id]);
+
+  const handleAddComment = async (username: string, content: string) => {
+    if (!id) return;
+    await commentsApi.create({
+      vestId: Number(id),
+      username,
+      content,
+    });
+    setReloadComments((x) => x + 1); // okini refetch u CommentsBox
+  };
 
   if (!news) return <p>Učitavanje vesti...</p>;
 
@@ -59,24 +52,12 @@ const NewsDetail: React.FC = () => {
         ))}
       </div>
 
-      <h2 className="text-2xl font-semibold mt-6 mb-2">Komentari</h2>
-      <div className="mb-4">
-        {comments.map((c, index) => (
-          <Comment key={index} username={c.username} content={c.content} />
-        ))}
-      </div>
+      {/* Lista komentara (bez naslova i bez forme u CommentsBox) */}
+      {id ? <CommentsBox vestId={Number(id)} refreshKey={reloadComments} /> : null}
 
-
-      {/* Forma za dodavanje komentara */}
-      <AddComment
-        onAdd={(username, content) =>
-          setComments([...comments, { username, content }])
-        }
-      />
-      <CommentsBox vestId={Number(id)} />
-
+      {/* Jedina forma za unos i submit */}
+      <AddComment onAdd={handleAddComment} />
     </div>
-    
   );
 };
 

@@ -7,10 +7,7 @@ import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostP
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-type ClaimsWithExp = JwtTokenClaims & {
-  exp?: number;
-  korisnickoIme?: string;
-};
+type ClaimsWithExp = JwtTokenClaims & { exp?: number; korisnickoIme?: string };
 
 const decodeJWT = (token: string): ClaimsWithExp | null => {
   try {
@@ -38,22 +35,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = PročitajVrednostPoKljuču("authToken");
-    if (savedToken) {
-      if (isTokenExpired(savedToken)) {
-        ObrišiVrednostPoKljuču("authToken");
-        setIsLoading(false);
-      } else {
-        const claims = decodeJWT(savedToken);
-        if (claims) {
-          setToken(savedToken);
-          setUser({ id: claims.id, uloga: claims.uloga });
-        } else {
+    try {
+      const savedToken = PročitajVrednostPoKljuču("authToken");
+      if (savedToken) {
+        if (isTokenExpired(savedToken)) {
           ObrišiVrednostPoKljuču("authToken");
+          setIsLoading(false);
+        } else {
+          const claims = decodeJWT(savedToken);
+          if (claims) {
+            setToken(savedToken);
+            setUser({ id: claims.id, uloga: claims.uloga });
+          } else {
+            ObrišiVrednostPoKljuču("authToken");
+          }
+          setIsLoading(false);
         }
+      } else {
         setIsLoading(false);
       }
-    } else {
+    } catch (e) {
+      console.error("Auth init failed:", e);
       setIsLoading(false);
     }
   }, []);
@@ -80,6 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     [user, token, isAuthenticated, isLoading]
   );
 
+  if (isLoading) return <div style={{ padding: 16 }}>Loading auth…</div>;
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
@@ -89,4 +92,4 @@ export const useAuth = () => {
   return ctx;
 };
 
-export default AuthProvider; 
+export default AuthProvider;
