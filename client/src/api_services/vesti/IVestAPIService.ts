@@ -2,25 +2,7 @@ import type { VestDto } from "../../models/vesti/VestDto";
 import type { ApiResponse } from "../../types/common/ApiResponse";
 
 export interface IVestApiService {
-	/**
-	 * Vraca vesti sortirane po vremenu, sa indeksima iz opseka [startIndex, endIndex)
-	 * @param startIndex
-	 * @param endIndex
-	 */
-	getNajnovije(
-		startIndex: number,
-		endIndex: number
-	): Promise<ApiResponse<VestDto[]>>;
-
-	/**
-	 * Vraca vesti sortirane po broju pregleda, sa indeksima iz opseka [startIndex, endIndex)
-	 * @param startIndex
-	 * @param endIndex
-	 */
-	getNajpopularnije(
-		startIndex: number,
-		endIndex: number
-	): Promise<ApiResponse<VestDto[]>>;
+	getVesti(): Promise<ApiResponse<VestDto[]>>;
 
   /**
    * Vraca vest sa datim ID-jem

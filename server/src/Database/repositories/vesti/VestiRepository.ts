@@ -4,6 +4,7 @@ import { IVestRepository } from "../../../Domain/repositories/vesti/IVestReposit
 
 import db from "../../connection/DbConnectionPool";
 import { Vest } from "../../../Domain/models/Vest";
+import { dateFormatter } from "../../../Helpers/DateFormatter";
 
 export class VestiRepository implements IVestRepository {
 	async getSlicneVesti(id: number): Promise<Vest[]> {
@@ -44,12 +45,14 @@ export class VestiRepository implements IVestRepository {
         VALUES (?, ?, ?, ?, ?, ?)
       `;
 
+      const foramtedDate = dateFormatter(`${vest.vreme}`);
+
 			const [result] = await db.execute<ResultSetHeader>(query, [
 				vest.autorId,
 				vest.naslov,
 				vest.tekst,
 				vest.slika,
-				vest.vreme,
+				foramtedDate,
 			]);
 
 			return result.insertId;
@@ -61,7 +64,7 @@ export class VestiRepository implements IVestRepository {
 	async getById(id: number): Promise<Vest> {
 		try {
 			const query = `
-        SELECT id, autor_id naslov, tekst, slika, vreme, br_pregleda
+        SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
         FROM vesti 
         WHERE id = ?;
       `;
@@ -87,68 +90,31 @@ export class VestiRepository implements IVestRepository {
 		}
 	}
 
-	async getByPopularity(start: number, end: number): Promise<Vest[]> {
-		try {
-			const query = `
+  async getAll(): Promise<Vest[]> {
+    try {
+      const query = `
         SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
         FROM vesti
-        ORDER BY br_pregleda, vreme DESC
-        LIMIT ? OFFSET ?;
+        ORDER BY vreme DESC;
       `;
 
-			const [rows] = await db.execute<RowDataPacket[]>(query, [
-				`${end - start}`,
-				`${start}`,
-			]);
-
-			return rows.map(
-				(row) =>
-					new Vest(
-						row.id,
-						row.autor_id,
-						row.naslov,
-						row.tekst,
-						row.slika,
-						row.vreme,
-						row.br_pregleda
-					)
-			);
-		} catch {
-			return [];
-		}
-	}
-
-	async getByTime(start: number, end: number): Promise<Vest[]> {
-		try {
-			const query = `
-        SELECT id, autor_id, naslov, tekst, slika, vreme, br_pregleda
-        FROM vesti
-        ORDER BY vreme DESC
-        LIMIT ? OFFSET ?;
-      `;
-
-			const [rows] = await db.execute<RowDataPacket[]>(query, [
-				`${end - start}`,
-				`${start}`,
-			]);
-
-			return rows.map(
-				(row) =>
-					new Vest(
-						row.id,
-						row.autor_id,
-						row.naslov,
-						row.tekst,
-						row.slika,
-						row.vreme,
-						row.br_pregleda
-					)
-			);
-		} catch (err) {
-			console.log(err)
-			return [];
-		}
-	}
+      const [rows] = await db.execute<RowDataPacket[]>(query);
+      return rows.map(
+        (row) =>
+          new Vest(
+            row.id,
+            row.autor_id,
+            row.naslov,
+            row.tekst,
+            row.slika,
+            row.vreme,
+            row.br_pregleda
+          )
+      );
+    } catch {
+      return [];
+    } 
+  }
 
 	async update(vest: Vest): Promise<Vest> {
 		try {
@@ -158,12 +124,14 @@ export class VestiRepository implements IVestRepository {
         WHERE id = ?
       `;
 
+      const foramtedDate = dateFormatter(`${vest.vreme}`);
+
 			const [result] = await db.execute<ResultSetHeader>(query, [
 				vest.autorId,
 				vest.naslov,
 				vest.tekst,
 				vest.slika,
-				vest.vreme,
+				foramtedDate,
 				vest.br_pregleda,
 				vest.id,
 			]);

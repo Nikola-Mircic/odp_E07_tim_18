@@ -41,9 +41,10 @@ const commentRepository: ICommentRepository = new CommentRepository();
 // Services
 const authService: IAuthService = new AuthService(userRepository);
 const userService: IUserService = new UserService(userRepository);
-const vestService: IVestService = new VestService(vestRepository, userService);
+const tagService: ITagService = new TagService(tagsRepository);
+const vestService: IVestService = new VestService(vestRepository, userService, tagService);
 const commentService: ICommentService = new CommentsService(commentRepository, userService, vestService);
-const tagService: ITagService = new TagService(tagsRepository, vestService);
+
 
 // WebAPI routes
 const authController = new AuthController(authService);

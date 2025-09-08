@@ -29,4 +29,14 @@ export interface ICommentApIService {
 		token: string,
 		comment: AddCommentType
 	): Promise<ApiResponse<CommentDto>>;
+
+  updateComment(
+    token: string,
+    comment: CommentDto
+  ): Promise<ApiResponse<CommentDto>>;
+
+  removeComment(
+    token: string,
+    id: number
+  ): Promise<ApiResponse<boolean>>;
 }

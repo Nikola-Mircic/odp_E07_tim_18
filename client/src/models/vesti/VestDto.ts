@@ -8,4 +8,5 @@ export interface VestDto {
 	slika: string;
 	vreme: Date;
 	brPregleda: number;
+  tags: string[];
 }

@@ -19,12 +19,29 @@ export class CommentController {
 	private initializeRoutes(): void {
 		this.router.get("/comments/id/:id", this.getById.bind(this));
 		this.router.get("/comments/for/:vestId", this.getForVest.bind(this));
-		this.router.post("/comments", authenticate, authorize('citalac', 'editor'), this.createComment.bind(this));
+		this.router.post(
+			"/comments",
+			authenticate,
+			authorize("citalac", "editor"),
+			this.createComment.bind(this)
+		);
+		this.router.post(
+			"/comments/update",
+			authenticate,
+			authorize("citalac", "editor"),
+			this.update.bind(this)
+		);
+		this.router.delete(
+			"/comments",
+			authenticate,
+			authorize("editor"),
+			this.delete.bind(this)
+		);
 	}
 
-  public getRouter(): Router{
-    return this.router;
-  }
+	public getRouter(): Router {
+		return this.router;
+	}
 
 	private async getById(req: any, res: any): Promise<void> {
 		try {
@@ -38,10 +55,13 @@ export class CommentController {
 			}
 
 			var comment = await this.commentService.getCommentById(id);
-			if (comment.id == 0)
+			if (comment.id == 0){
 				res
 					.status(StatusCodes.NOT_FOUND)
 					.json({ success: false, message: `Nema komentara sa id: ${id}` });
+      
+        return;
+      }
 
 			res.status(StatusCodes.OK).json({
 				success: true,
@@ -92,15 +112,18 @@ export class CommentController {
 			}
 
 			var created = await this.commentService.createComment(comment);
-			if (created.id == 0)
+			if (created.id == 0){
 				res
 					.status(StatusCodes.BAD_REQUEST)
 					.json({ success: false, message: `Neuspelo dodavanje komentara...` });
+      
+        return;
+      }
 
 			res.status(StatusCodes.CREATED).json({
 				success: true,
 				message: "DODAO GA!",
-				data: comment,
+				data: created,
 			});
 		} catch {
 			res
@@ -108,4 +131,59 @@ export class CommentController {
 				.json({ success: false, message: "Nesto ne radi..." });
 		}
 	}
+
+	private async update(req: any, res: any): Promise<void> {
+		try {
+			const comment: CommentDto = req.body;
+
+			if (!comment) {
+				res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ success: false, message: `Neispravan objekat poslat` });
+				return;
+			}
+
+			var created = await this.commentService.updateComment(comment);
+			if (created.id == 0)
+				res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ success: false, message: `Neuspelo dodavanje komentara...` });
+
+			res.status(StatusCodes.CREATED).json({
+				success: true,
+				message: "IZMENIO GA!",
+				data: created,
+			});
+		} catch {
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ success: false, message: "Nesto ne radi..." });
+		}
+	}
+
+  private async delete(req: any, res: any): Promise<void> {
+    try {
+      const id = parseInt(req.query.id);
+
+      if (isNaN(id)) {
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ success: false, message: `Neispravan id: ${id}` });
+        return;
+      }
+      var deleted = await this.commentService.deleteComment(id);
+      if (!deleted)
+        res
+          .status(StatusCodes.BAD_REQUEST)
+          .json({ success: false, message: `Neuspelo brisanje komentara...` });
+      
+      res
+        .status(StatusCodes.OK)
+        .json({ success: true, message: "OBRISAO GA!" });
+    } catch {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ success: false, message: "Nesto ne radi..." });
+    }
+  }
 }

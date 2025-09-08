@@ -47,10 +47,13 @@ export class UserRepository implements IUserRepository {
 			const query = `
         SELECT id, uloga, ime, prezime, mejl, lozinka 
         FROM users
-        WHERE id = ?
+        WHERE id = ?;
       `;
 
 			const [rows] = await db.execute<RowDataPacket[]>(query, [id]);
+      
+      console.log(`id: ${id}`);
+      console.log(rows);
 
 			if (rows.length > 0) {
 				const row = rows[0];
@@ -66,7 +69,8 @@ export class UserRepository implements IUserRepository {
 			}
 
 			return new User();
-		} catch {
+		} catch (error){
+      console.log(error);
 			return new User();
 		}
 	}

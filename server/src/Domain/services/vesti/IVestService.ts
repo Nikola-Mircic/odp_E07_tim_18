@@ -22,19 +22,5 @@ export interface IVestService {
 	 */
 	getSlicneVesti(id: number): Promise<VestDTO[]>;
 
-	/**
-	 * Pronalazenje najnovijih vesti
-   * @param start - početni indeks
-   * @param end - krajnji indeks
-   * @returns Niz najnovijih vesti ili prazan niz ako nema vesti
-	 */
-	getNewestNews(start: number, end: number): Promise<VestDTO[]>;
-
-	/**
-	 * Pronalazenje najpopularnijih vesti
-   * @param start - početni indeks
-   * @param end - krajnji indeks
-   * @returns Niz najpopularnijih vesti ili prazan niz ako nema vesti
-	 */
-	getNajpolularnijeVesti(start: number, end: number): Promise<VestDTO[]>;
+	getVesti(): Promise<VestDTO[]>;
 }

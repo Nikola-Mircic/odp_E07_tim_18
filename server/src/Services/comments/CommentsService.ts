@@ -5,6 +5,7 @@ import { ICommentRepository } from "../../Domain/repositories/comment/ICommentRe
 import { ICommentService } from "../../Domain/services/comments/IComentService";
 import { IUserService } from "../../Domain/services/users/IUserService";
 import { IVestService } from "../../Domain/services/vesti/IVestService";
+import { Comment } from "../../Domain/models/Comment";
 
 export class CommentsService implements ICommentService {
   public constructor(
@@ -12,6 +13,25 @@ export class CommentsService implements ICommentService {
     private userService: IUserService,
     private vestService: IVestService
   ) {}
+
+  async updateComment(comment: CommentDto): Promise<CommentDto> {
+    const updated = await this.commentRepository.updateComment(new Comment(
+      comment.id,
+      comment.autor.id,
+      comment.vestId,
+      comment.tekst,
+      comment.vreme
+    ));
+
+    if(updated.id == 0)
+      return new CommentDto();
+
+    return comment;
+  }
+
+  deleteComment(id: number): Promise<boolean> {
+    return this.commentRepository.deleteComment(id);
+  }
   
   async getCommentById(id: number): Promise<CommentDto> {
     try{
@@ -58,15 +78,20 @@ export class CommentsService implements ICommentService {
   }
 
   async createComment(comment: AddCommentDto): Promise<CommentDto> {
-    let autor = await this.userService.getUserById(comment.autorId);
+    console.log(comment);
+    console.log(`AutorId: ${comment.autorId}, VestId: ${comment.vestId}`);
+    const autor = await this.userService.getUserById(comment.autorId);
+    console.log("Autor:");
+    console.log(autor);
     if(autor.id == 0)
       return new CommentDto();
 
-    let vest = await this.vestService.getVestById(comment.vestId);
+    const vest = await this.vestService.getVestById(comment.vestId);
+    console.log(vest);
     if(vest.id == 0)
       return new CommentDto();
 
-    let created = await this.commentRepository.createComment(comment);
+    const created = await this.commentRepository.createComment(comment);
     if (created.id == 0)
       return new CommentDto();
 

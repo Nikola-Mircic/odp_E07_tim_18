@@ -3,8 +3,52 @@ import { AddCommentDto } from "../../../Domain/DTOs/comments/AddCommnetDto";
 import { Comment } from "../../../Domain/models/Comment";
 import { ICommentRepository } from "../../../Domain/repositories/comment/ICommentRepository";
 import db from "../../connection/DbConnectionPool";
+import { dateFormatter } from "../../../Helpers/DateFormatter";
 
 export class CommentRepository implements ICommentRepository {
+
+  async updateComment(comment: Comment): Promise<Comment> {
+    try{
+      const query = `
+        UPDATE comments
+        SET autor_id = ?, vest_id = ?, tekst = ?, vreme = ?
+        WHERE id = ?
+      `;
+
+      const foramtedDate = dateFormatter(`${comment.vreme}`);
+
+      const [result] = await db.execute<ResultSetHeader>(query, [
+				comment.autorId,
+				comment.vestId,
+				comment.tekst,
+				foramtedDate,
+				comment.id,
+			]);
+
+      if (result.affectedRows > 0) {
+				return comment;
+			}
+      return new Comment();
+    }catch{
+      return new Comment();
+    }
+  }
+
+  async deleteComment(id: number): Promise<boolean> {
+    try{
+      const query = `
+        DELETE FROM comments
+        WHERE id = ?
+      `;
+
+      const [result] = await db.execute<ResultSetHeader>(query, [id]);
+
+      return result.affectedRows > 0;
+    }catch{
+      return false;
+    }
+  }
+
   async getCommentById(id: number): Promise<Comment> {
     try {
 			var query = `
@@ -55,12 +99,17 @@ export class CommentRepository implements ICommentRepository {
         VALUES (?, ?, ?, ?)
       `;
 
+      const foramtedDate = dateFormatter(`${comment.vreme}`);
+
 			const [result] = await db.execute<ResultSetHeader>(query, [
-        comment.autorId,
-        comment.vestId,
-        comment.tekst,
-        comment.vreme
-      ]); 
+				comment.autorId,
+				comment.vestId,
+				comment.tekst,
+				foramtedDate,
+			]); 
+
+      console.log("Inserting...");
+      console.log(result);
 
 			if(result.affectedRows > 0){
         return new Comment(
@@ -73,7 +122,8 @@ export class CommentRepository implements ICommentRepository {
       }
 
       return new Comment();
-		} catch {
+		} catch (error) {
+      console.log(error);
 			return new Comment();
 		}
   }

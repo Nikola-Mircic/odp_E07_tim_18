@@ -5,8 +5,7 @@ import { IVestService } from "../../Domain/services/vesti/IVestService";
 
 export class TagService implements ITagService{
   public constructor(
-    private tagRepository: ITagRepository,
-    private vestService: IVestService
+    private tagRepository: ITagRepository
   ){}
 
   getForVest(id_vesti: number): Promise<Tag[]> {
@@ -14,10 +13,6 @@ export class TagService implements ITagService{
   }
 
   async addTag(id_vesti: number, tag: string): Promise<boolean> {
-    let vest = await this.vestService.getVestById(id_vesti);
-    if(vest.id == 0)
-      return false;
-
     return this.tagRepository.addTag(id_vesti, tag);
   }
   

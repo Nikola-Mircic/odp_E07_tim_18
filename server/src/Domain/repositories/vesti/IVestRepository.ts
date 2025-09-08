@@ -16,21 +16,7 @@ export interface IVestRepository {
 	 */
 	getById(id: number): Promise<Vest>;
 
-	/**
-	 * Vrati najpopularnije vesti u opsegu
-	 * @param start - pocetak opsega
-	 * @param end - kraj opsega
-	 * @returns Niz najpopularnijih vesti u opsegu [start, end)
-	 */
-	getByPopularity(start: number, end: number): Promise<Vest[]>;
-
-	/**
-	 * Vrati najnovije vesti u opsegu
-	 * @param start - pocetak opsega
-	 * @param end - kraj opsega
-	 * @returns Niz najnovijih vesti u opsegu [start, end)
-	 * */
-	getByTime(start: number, end: number): Promise<Vest[]>;
+	getAll(): Promise<Vest[]>;
 
 	/**
 	 * Azurira vest u bazi
