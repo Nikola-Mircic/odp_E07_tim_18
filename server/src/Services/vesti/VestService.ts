@@ -2,15 +2,18 @@ import { CommentDto } from "../../Domain/DTOs/comments/CommentDto";
 import { CreateVestDTO } from "../../Domain/DTOs/vesti/CreateVestDTO";
 import { VestDTO } from "../../Domain/DTOs/vesti/VestDTO";
 import { Vest } from "../../Domain/models/Vest";
+import { ITagRepository } from "../../Domain/repositories/tags/ITagRepository";
 import { IUserRepository } from "../../Domain/repositories/users/IUserRepository";
 import { IVestRepository } from "../../Domain/repositories/vesti/IVestRepository";
+import { ITagService } from "../../Domain/services/tags/ITagService";
 import { IUserService } from "../../Domain/services/users/IUserService";
 import { IVestService } from "../../Domain/services/vesti/IVestService";
 
 export class VestService implements IVestService {
 	public constructor(
     private vestRepository: IVestRepository, 
-    private userSerivce: IUserService
+    private userSerivce: IUserService,
+    private tagService: ITagService
   ) {}
 
 	async createVest(vest: CreateVestDTO): Promise<number> {
@@ -29,10 +32,12 @@ export class VestService implements IVestService {
     this.vestRepository.update(vest);
 
     let autor = await this.userSerivce.getUserById(vest.autorId);
+    let tags = await this.tagService.getForVest(vest.id);
 
     return new VestDTO(
       vest.id,
       autor,
+      tags.map(t => t.naziv),
       vest.naslov,
       vest.tekst,
       vest.slika,
@@ -48,10 +53,12 @@ export class VestService implements IVestService {
 
     for(let vest of slicneVesti){
       let autor = await this.userSerivce.getUserById(vest.autorId);
+      let tags = await this.tagService.getForVest(vest.id);
 
       result.push(new VestDTO(
         vest.id, 
         autor,
+        tags.map(t => t.naziv),
         vest.naslov,
         vest.tekst,
         vest.slika,
@@ -63,42 +70,21 @@ export class VestService implements IVestService {
     return result;
 	}
 
-	async getNewestNews(start: number, end: number): Promise<VestDTO[]> {
-    var vesti = await this.vestRepository.getByTime(start, end);
+	async getVesti(): Promise<VestDTO[]> {
+    var vesti = await this.vestRepository.getAll();
 
     var result: VestDTO[] = [];
 
 		for (let vest of vesti) {
 			let autor = await this.userSerivce.getUserById(vest.autorId);
 
-			result.push(
-				new VestDTO(
-					vest.id,
-					autor,
-					vest.naslov,
-					vest.tekst,
-					vest.slika,
-					vest.vreme,
-					vest.br_pregleda
-				)
-			);
-		}
-
-		return result;
-	}
-
-	async getNajpolularnijeVesti(start: number, end: number): Promise<VestDTO[]> {
-		var vesti = await this.vestRepository.getByPopularity(start, end);
-
-		var result: VestDTO[] = [];
-
-		for (let vest of vesti) {
-			let autor = await this.userSerivce.getUserById(vest.autorId);
+      let tags = await this.tagService.getForVest(vest.id);
 
 			result.push(
 				new VestDTO(
 					vest.id,
 					autor,
+          tags.map(t => t.naziv),
 					vest.naslov,
 					vest.tekst,
 					vest.slika,

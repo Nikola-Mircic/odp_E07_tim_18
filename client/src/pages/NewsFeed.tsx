@@ -1,15 +1,26 @@
-import { vestiApi } from "../api_services/vesti/VestAPIService";
+import { useEffect, useState } from "react";
+import type { IVestApiService } from "../api_services/vesti/IVestAPIService";
 import NewsCard from "../components/NewsCard";
-import useFetch from "../hooks/useFetch";
 import type { VestDto } from "../models/vesti/VestDto";
-import type { ApiResponse } from "../types/common/ApiResponse";
 
-const NewsFeed = () => {
-  const { data, loading, error } = useFetch<ApiResponse<VestDto[]>>(
-    vestiApi.getNajpopularnije,
-    0,
-    6 
-  );
+interface NewsFeedProps {
+  vestiApi: IVestApiService;
+}
+
+const NewsFeed = ({ vestiApi }: NewsFeedProps) => {
+  const [news, setNews] = useState<VestDto[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    vestiApi
+      .getVesti()
+      .then((res) => setNews(res.data || []))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, []);
 
   if (loading)
     return (
@@ -25,14 +36,12 @@ const NewsFeed = () => {
       </div>
     );
 
-  if (!data || !data.data || data.data.length === 0)
+  if (!news || news.length === 0)
     return (
       <div className="text-center text-gray-500 py-10">
         Trenutno nema dostupnih vesti.
       </div>
     );
-
-  const news = data.data;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -50,6 +59,7 @@ const NewsFeed = () => {
           />
         ))}
       </div>
+
     </div>
   );
 };

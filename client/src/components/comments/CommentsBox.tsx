@@ -1,20 +1,24 @@
 // client/src/components/comments/CommentsBox.tsx
 import React, { useEffect, useState } from "react";
-import { commentsApi, type CommentDTO } from "../../api_services/comments/CommentApiService";
 import CommentItem from "./CommentItem";
 import { useAuth } from "../../hooks/useAuthHook";
+import type { CommentDto } from "../../models/comments/CommentDto";
+import type { ICommentApIService } from "../../api_services/comments/ICommentsApiService";
 
-type Props = { vestId: number };
+type Props = { 
+  vestId: number,
+  commentsApi: ICommentApIService
+};
 
-export default function CommentsBox({ vestId }: Props) {
-  const { token } = useAuth();
-  const [comments, setComments] = useState<CommentDTO[]>([]);
+export default function CommentsBox({ vestId, commentsApi }: Props) {
+  const { user, token } = useAuth();
+  const [comments, setComments] = useState<CommentDto[]>([]);
   const [newText, setNewText] = useState("");
   const [loading, setLoading] = useState(false);
 
   const load = async () => {
-    const list = await commentsApi.listByVest(vestId);
-    setComments(list);
+    const list = await commentsApi.getCommentsForVest(vestId);
+    setComments(list.data || []);
   };
 
   useEffect(() => {
@@ -26,7 +30,12 @@ export default function CommentsBox({ vestId }: Props) {
     if (!token || !newText.trim()) return;
     setLoading(true);
     try {
-      await commentsApi.create(vestId, newText.trim(), token);
+      await commentsApi.createComment(token, {
+        vestId,
+        autorId: user?.id || 0,
+        tekst: newText.trim(),
+        vreme: new Date(),
+      });
       setNewText("");
       await load();
     } finally {
@@ -41,6 +50,7 @@ export default function CommentsBox({ vestId }: Props) {
       <div className="space-y-3">
         {comments.map((c) => (
           <CommentItem
+            commentsApi={commentsApi}
             key={c.id}
             data={c}
             onUpdated={(nc) =>

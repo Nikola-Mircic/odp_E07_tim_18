@@ -7,106 +7,101 @@ import { authenticate } from "../middlewere/authentication";
 import { authorize } from "../middlewere/authorization";
 
 export class VestController {
-  private router: Router;
-  private vestService: IVestService;
-  private userService: IUserService;
+	private router: Router;
+	private vestService: IVestService;
+	private userService: IUserService;
 
-  public constructor(_vestService: IVestService, _userService: IUserService) {
-    this.router = Router();
-    this.vestService = _vestService;
-    this.userService = _userService;
-    this.initializeRoutes();
-  }
+	public constructor(_vestService: IVestService, _userService: IUserService) {
+		this.router = Router();
+		this.vestService = _vestService;
+		this.userService = _userService;
+		this.initializeRoutes();
+	}
 
-  private initializeRoutes() {
-    this.router.post('/vesti', authenticate, authorize('editor') ,this.createVest.bind(this));
-    this.router.get('/vesti/id/:id', this.getVestById.bind(this));
-    this.router.get("/vesti/id/:id/slicne", this.getSlicneVesti.bind(this));
-    this.router.get("/vesti/najnovije", this.getNewestNews.bind(this));
-    this.router.get(
-			"/vesti/najpopularnije/",
-			this.getNajpopularnijeVesti.bind(this)
+	private initializeRoutes() {
+		this.router.post(
+			"/vesti",
+			authenticate,
+			authorize("editor"),
+			this.createVest.bind(this)
 		);
-  }
+		this.router.get("/vesti/id/:id", this.getVestById.bind(this));
+		this.router.get("/vesti/id/:id/slicne", this.getSlicneVesti.bind(this));
+		this.router.get("/vesti", this.getVesti.bind(this));
+	}
 
-  private async createVest(req: any, res: any): Promise<void> {
-    const vestData: CreateVestDTO = req.body;
+	private async createVest(req: any, res: any): Promise<void> {
+		const vestData: CreateVestDTO = req.body;
 
-    var user = await this.userService.getUserById(vestData.autorId);
-    if(user.id === 0) {
-      res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: 'Invalid author ID' });
-      return;
-    }
+		var user = await this.userService.getUserById(vestData.autorId);
+		if (user.id === 0) {
+			res
+				.status(StatusCodes.BAD_REQUEST)
+				.json({ success: false, message: "Invalid author ID" });
+			return;
+		}
 
-    try {
-      const newVest = await this.vestService.createVest(vestData);
+		try {
+			const newVest = await this.vestService.createVest(vestData);
 
-      res.status(StatusCodes.CREATED).json({ success: true, data: newVest });
-    } catch (error) {
-      console.error('Error creating vest:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
-    }
-  }
+			res.status(StatusCodes.CREATED).json({ success: true, data: newVest });
+		} catch (error) {
+			console.error("Error creating vest:", error);
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ success: false, message: "Internal server error" });
+		}
+	}
 
-  private async getVestById(req: any, res: any): Promise<void> {
-    const id = parseInt(req.params.id);
+	private async getVestById(req: any, res: any): Promise<void> {
+		const id = parseInt(req.params.id);
 
-    try {
-      var vest = await this.vestService.getVestById(id);
+		try {
+			var vest = await this.vestService.getVestById(id);
 
-      if (vest.id !== 0) {
-        res.status(StatusCodes.OK).json({ success: true, data: vest });
-      } else {
-        res.status(StatusCodes.NOT_FOUND).json({ success: false, message: 'Vest not found' });
-      }
-    } catch (error) {
-      console.error('Error fetching vest by ID:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
-    }
-  }
+			if (vest.id !== 0) {
+				res.status(StatusCodes.OK).json({ success: true, data: vest });
+			} else {
+				res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ success: false, message: "Vest not found" });
+			}
+		} catch (error) {
+			console.error("Error fetching vest by ID:", error);
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ success: false, message: "Internal server error" });
+		}
+	}
 
-  private async getSlicneVesti(req: any, res: any): Promise<void> {
-    const id = parseInt(req.params.id);
+	private async getSlicneVesti(req: any, res: any): Promise<void> {
+		try {
+      const id = parseInt(req.params.id);
 
-    try {
-      const vesti = await this.vestService.getSlicneVesti(id);
-      res.status(StatusCodes.OK).json({ success: true, data: vesti });
+			const vesti = await this.vestService.getSlicneVesti(id);
+			res.status(StatusCodes.OK).json({ success: true, data: vesti });
+		} catch (error) {
+			console.error("Error fetching similar vesti:", error);
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ success: false, message: "Internal server error" });
+		}
+	}
 
-    } catch (error) {
-      console.error('Error fetching similar vesti:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
-    }
-  }
+	private async getVesti(req: any, res: any): Promise<void> {
+		try {
+			const vesti = await this.vestService.getVesti();
 
-  private async getNewestNews(req: any, res: any): Promise<void> {
-    const start = req.query.start;
-    const end = req.query.end;
+			res.status(StatusCodes.OK).json({ success: true, data: vesti });
+		} catch (error) {
+			console.error("Error fetching most popular vesti:", error);
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ success: false, message: "Internal server error" });
+		}
+	}
 
-    try {
-      const vesti = await this.vestService.getNewestNews(start, end);
-      res.status(StatusCodes.OK).json({ success: true, data: vesti });
-
-    } catch (error) {
-      console.error('Error fetching newest vesti:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
-    }
-  }
-
-  private async getNajpopularnijeVesti(req: any, res: any): Promise<void> {
-    const start = req.query.start;
-		const end = req.query.end;
-
-    try {
-      const vesti = await this.vestService.getNajpolularnijeVesti(start, end);
-      res.status(StatusCodes.OK).json({ success: true, data: vesti });
-
-    } catch (error) {
-      console.error('Error fetching most popular vesti:', error);
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal server error' });
-    }
-  }
-
-  public getRouter(): Router {
-    return this.router;
-  }
+	public getRouter(): Router {
+		return this.router;
+	}
 }

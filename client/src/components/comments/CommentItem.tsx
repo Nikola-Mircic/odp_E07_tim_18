@@ -1,20 +1,22 @@
 // client/src/components/comments/CommentItem.tsx
 import { useState } from "react";
-import { commentsApi, type CommentDTO } from "../../api_services/comments/CommentApiService";
 import { useAuth } from "../../hooks/useAuthHook";
+import type { CommentDto } from "../../models/comments/CommentDto";
+import type { ICommentApIService } from "../../api_services/comments/ICommentsApiService";
 
 type Props = {
-  data: CommentDTO;
-  onUpdated: (c: CommentDTO) => void;
+  data: CommentDto;
+  commentsApi: ICommentApIService;
+  onUpdated: (c: CommentDto) => void;
   onDeleted: (id: number) => void;
 };
 
-export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
+export default function CommentItem({ data, commentsApi, onUpdated, onDeleted }: Props) {
   const { user, token } = useAuth();
   const canModify =
-    !!user &&
-    !!token &&
-    (user.id === data.autor_id || user.uloga === "admin" || user.uloga === "editor");
+    user &&
+    token &&
+    (user.id === data.autor.id || user.uloga === "editor");
 
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(data.tekst);
@@ -24,7 +26,7 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
     if (!token) return;
     setLoading(true);
     try {
-      await commentsApi.update(data.id, text.trim(), token);
+      await commentsApi.updateComment(token, { ...data, tekst: text.trim() });
       onUpdated({ ...data, tekst: text.trim() });
       setEditing(false);
     } finally {
@@ -37,7 +39,7 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
     if (!window.confirm("Obrisati komentar?")) return;
     setLoading(true);
     try {
-      await commentsApi.remove(data.id, token);
+      await commentsApi.removeComment(token, data.id);
       onDeleted(data.id);
     } finally {
       setLoading(false);
@@ -46,7 +48,7 @@ export default function CommentItem({ data, onUpdated, onDeleted }: Props) {
 
   return (
     <div className="py-3 border-b">
-      <div className="text-sm text-gray-600">{data.autor}</div>
+      <div className="text-sm text-gray-600">{data.autor.ime} {data.autor.prezime}</div>
 
       {!editing ? (
         <p className="whitespace-pre-wrap mt-1">{data.tekst}</p>

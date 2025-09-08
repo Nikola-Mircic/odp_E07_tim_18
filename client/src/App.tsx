@@ -8,6 +8,8 @@ import LoginPage from "./pages/LoginPage";
 import Profile from "./pages/Profile";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/kontrolna_tabla/ProtectedRoute";
+import { vestiApi } from "./api_services/vesti/VestAPIService";
+import commentApi from "./api_services/comments/CommentApiService";
 
 const App: React.FC = () => {
   return (
@@ -15,8 +17,8 @@ const App: React.FC = () => {
       <Navbar />
       <main className="flex-grow container mx-auto px-4 py-6">
         <Routes>
-          <Route path="/" element={<NewsFeed />} />
-          <Route path="/news/:id" element={<NewsDetail />} />
+          <Route path="/" element={<NewsFeed vestiApi={vestiApi}/>} />
+          <Route path="/news/:id" element={<NewsDetail commentsApi={commentApi} vestiApi={vestiApi} />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           {/* Sve rute unutar ovog wrapper-a su zaštićene */}

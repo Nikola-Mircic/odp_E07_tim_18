@@ -4,25 +4,24 @@ import NewsCard from "../components/NewsCard";
 import Comment from "../components/Comment";
 import AddComment from "../components/AddComment";
 import type { VestDto } from "../models/vesti/VestDto";
-import { vestiApi } from "../api_services/vesti/VestAPIService";
 import CommentsBox from "../components/comments/CommentsBox";
+import type { IVestApiService } from "../api_services/vesti/IVestAPIService";
+import type { ICommentApIService } from "../api_services/comments/ICommentsApiService";
+import type { CommentType } from "../types/comments/CommentType";
 
-interface CommentType {
-  username: string;
-  content: string;
+interface NewsDetailProps {
+  vestiApi: IVestApiService,
+  commentsApi: ICommentApIService,
 }
 
-const NewsDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [news, setNews] = useState<VestDto | null>(null);
-  const [relatedNews, setRelatedNews] = useState<VestDto[]>([]);
-  const [comments, setComments] = useState<CommentType[]>([
-    { username: "Ana", content: "Odlična vest!" },
-    { username: "Marko", content: "Hvala za info." },
-  ]);
+const NewsDetail: React.FC<NewsDetailProps> = ({vestiApi, commentsApi}: NewsDetailProps) => {
+	const { id } = useParams<{ id: string }>();
+	const [news, setNews] = useState<VestDto | null>(null);
+	const [relatedNews, setRelatedNews] = useState<VestDto[]>([]);
+	const [comments, setComments] = useState<CommentType[]>([]);
 
-  useEffect(() => {
-    (async () => {
+	useEffect(() => {
+		(async () => {
 			if (id) {
 				// OVO JE SAMO PRIMER!
 				var found = await vestiApi
@@ -40,42 +39,44 @@ const NewsDetail: React.FC = () => {
 				else setRelatedNews(slicne);
 			}
 		})();
-  }, [id]);
+	}, [id]);
 
-  if (!news) return <p>Učitavanje vesti...</p>;
+	if (!news) return <p>Učitavanje vesti...</p>;
 
-  return (
-    <div className="p-4 max-w-4xl mx-auto ">
-      <h1 className="text-3xl font-bold mb-2">{news.naslov}</h1>
-      <p className="text-gray-500 mb-4">Pregleda: {news.brPregleda}</p>
-      <p className="mb-4">{news.tekst}</p>
+	return (
+		<div className="p-4 max-w-4xl mx-auto ">
+			<h1 className="text-3xl font-bold mb-2">{news.naslov}</h1>
+			<p className="text-gray-500 mb-4">Pregleda: {news.brPregleda}</p>
+			<p className="mb-4">{news.tekst}</p>
 
-      <h2 className="text-2xl font-semibold mt-6 mb-2">Povezane vesti</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {relatedNews.map((n) => (
-          <NewsCard key={n.id} id={n.id} title={n.naslov} views={n.brPregleda} />
-        ))}
-      </div>
+			<h2 className="text-2xl font-semibold mt-6 mb-2">Povezane vesti</h2>
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+				{relatedNews.map((n) => (
+					<NewsCard
+						key={n.id}
+						id={n.id}
+						title={n.naslov}
+						views={n.brPregleda}
+					/>
+				))}
+			</div>
 
-      <h2 className="text-2xl font-semibold mt-6 mb-2">Komentari</h2>
-      <div className="mb-4">
-        {comments.map((c, index) => (
-          <Comment key={index} username={c.username} content={c.content} />
-        ))}
-      </div>
+			<h2 className="text-2xl font-semibold mt-6 mb-2">Komentari</h2>
+			<div className="mb-4">
+				{comments.map((c, index) => (
+					<Comment key={index} username={c.username} content={c.content} />
+				))}
+			</div>
 
-
-      {/* Forma za dodavanje komentara */}
-      <AddComment
-        onAdd={(username, content) =>
-          setComments([...comments, { username, content }])
+			{/* Forma za dodavanje komentara */}
+			<AddComment
+				onAdd={(username, content) =>
+					setComments([...comments, { username, content }])
         }
-      />
-      <CommentsBox vestId={Number(id)} />
-
-    </div>
-    
-  );
+			/>
+			<CommentsBox commentsApi={commentsApi} vestId={Number(id)} />
+		</div>
+	);
 };
 
 export default NewsDetail;
