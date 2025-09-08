@@ -35,6 +35,7 @@ export class AuthService implements IAuthService {
 		const token = jwt.sign(
 			{
 				id: user.id,
+        korisnickoIme: `${user.ime} ${user.prezime}`,
 				uloga: user.uloga,
 			},
 			process.env.JWT_SECRET ?? "",
@@ -62,6 +63,7 @@ export class AuthService implements IAuthService {
 		const token = jwt.sign(
 			{
 				id: newUser.id,
+				korisnickoIme: `${user.ime} ${user.prezime}`,
 				uloga: newUser.uloga,
 			},
 			process.env.JWT_SECRET ?? "",

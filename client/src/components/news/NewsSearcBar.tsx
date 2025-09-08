@@ -40,7 +40,7 @@ const NewsSearchBar: React.FC<NewsSearchBarProps> = ({ onSearch }) => {
   const [orderByTime, setOrderByTime] = useState(true);
 
   return (
-		<div className="flex items-center justify-center space-x-2 w-full max-w-md mb-6">
+		<div className="flex items-center w-full justify-center space-x-2 mb-6">
 			<input
 				type="text"
 				value={searchTerm}

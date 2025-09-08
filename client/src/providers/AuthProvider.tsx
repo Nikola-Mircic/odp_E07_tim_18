@@ -7,15 +7,10 @@ import { ObrišiVrednostPoKljuču, PročitajVrednostPoKljuču, SačuvajVrednostP
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ⬇️ Dodali smo korisnickoIme?: string i exp?: number da pokrije payload iz tokena
-type ClaimsWithExp = JwtTokenClaims & {
-  exp?: number;
-  korisnickoIme?: string;
-};
 
-const decodeJWT = (token: string): ClaimsWithExp | null => {
+const decodeJWT = (token: string): JwtTokenClaims | null => {
   try {
-    const decoded = jwtDecode<ClaimsWithExp>(token);
+    const decoded = jwtDecode<JwtTokenClaims>(token);
     // dovoljni su id i uloga; korisnickoIme je opciono
     if (decoded.id && decoded.uloga) return decoded;
     return null;
@@ -26,7 +21,7 @@ const decodeJWT = (token: string): ClaimsWithExp | null => {
 
 const isTokenExpired = (token: string): boolean => {
   try {
-    const decoded = jwtDecode<ClaimsWithExp>(token);
+    const decoded = jwtDecode(token);
     const currentTime = Date.now() / 1000;
     return decoded.exp ? decoded.exp < currentTime : false;
   } catch {
@@ -49,7 +44,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const claims = decodeJWT(savedToken);
         if (claims) {
           setToken(savedToken);
-          setUser({ id: claims.id, uloga: claims.uloga });
+          setUser({ id: claims.id, username: claims.korisnickoIme, uloga: claims.uloga });
         } else {
           ObrišiVrednostPoKljuču("authToken");
         }
@@ -64,7 +59,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const claims = decodeJWT(newToken);
     if (claims && !isTokenExpired(newToken)) {
       setToken(newToken);
-      setUser({ id: claims.id, uloga: claims.uloga });
+      setUser({ id: claims.id, username: claims.korisnickoIme, uloga: claims.uloga });
       SačuvajVrednostPoKljuču("authToken", newToken);
     }
   };
